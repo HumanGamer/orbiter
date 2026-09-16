@@ -182,10 +182,15 @@ endif()
 # =====================================================================================
 # Find required and optional build tools
 
-option(
-	ORBITER_BUILD_D3D9CLIENT
+option(ORBITER_BUILD_D3D9CLIENT
 	"Build the D3D9 graphics client"
 	ON
+)
+
+option(
+	ORBITER_BUILD_SDLGPUCLIENT
+	"Build the SDL_gpu-based graphics client (cross-platform alternative to D3D9)"
+	OFF
 )
 
 option(
@@ -231,6 +236,20 @@ if(ORBITER_BUILD_D3D9CLIENT)
 	if(${DXSDK_DIR} STREQUAL "DXSDK_DIR-NOTFOUND")
 		message(FATAL_ERROR "DirectX SDK not found. The D3D9 graphics client will not be built.")
 	endif()
+endif()
+
+# SDL3 cross-platform dependencies (used by SDLGPUClient and SdlBridge)
+find_package(SDL3 QUIET)
+if(NOT SDL3_FOUND AND ORBITER_BUILD_SDLGPUCLIENT)
+	message(FATAL_ERROR "SDL3 not found. Install via homebrew (macOS), vcpkg (Windows), or package manager (Linux).")
+elseif(SDL3_FOUND)
+	message(STATUS "Found SDL3: ${SDL3_INCLUDE_DIRS}")
+endif()
+find_package(SDL3_shadercross QUIET)
+if(NOT SDL3_shadercross_FOUND AND ORBITER_BUILD_SDLGPUCLIENT)
+	message(FATAL_ERROR "SDL3_shadercross not found. Install it as a dependency.")
+elseif(SDL3_shadercross_FOUND)
+	message(STATUS "Found SDL3_shadercross")
 endif()
 
 if (ORBITER_MAKE_DOC)

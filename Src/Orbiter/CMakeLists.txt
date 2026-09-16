@@ -110,6 +110,8 @@ set(common_src
 	D3d7util.cpp
 	D3dmath.cpp
 	Di7frame.cpp
+# SDL bridge (cross-platform event/input)
+	src/SdlBridge.cpp
 # Utils
 	Log.cpp
 	Memstat.cpp
@@ -129,21 +131,25 @@ set(Orbiter_includes
 	${HTMLHELP_INCLUDE_DIR}
 )
 
-set(Orbiter_common_libs
-	Winmm.dll
-	comctl32.lib
-	UxTheme.lib
-	version.lib
-	${HTML_HELP_LIBRARY}
-	zlib
-	${HTMLHELP_LIB}
-	$<TARGET_FILE:Orbitersdk>
-	$<TARGET_FILE:DlgCtrl>
-)
-set(Orbiter_libs
-	dxguid.lib
-	dinput8.lib
-)
+	set(Orbiter_common_libs
+		comctl32.lib
+		UxTheme.lib
+		version.lib
+		${HTML_HELP_LIBRARY}
+		zlib
+		${HTMLHELP_LIB}
+		$<TARGET_FILE:Orbitersdk>
+		$<TARGET_FILE:DlgCtrl>
+	)
+
+	if(ORBITER_BUILD_SDLGPUCLIENT OR SDL3_FOUND)
+		set(Orbiter_libs SDL3::SDL3 stb::image)
+	else()
+		set(Orbiter_libs
+			dxguid.lib
+			dinput8.lib
+		)
+	endif()
 
 set(Orbiter_depends
 	Orbitersdk
