@@ -4,8 +4,12 @@
 #define STRICT 1
 #define OAPI_IMPLEMENTATION
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include <SDL3/SDL.h>
+#else
 // Enable visual styles. Source: https://msdn.microsoft.com/en-us/library/windows/desktop/bb773175(v=vs.85).aspx
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
 
 #include <windows.h>
 #include <direct.h>
@@ -43,8 +47,17 @@
 #include "DlgCtrl.h"
 #include "GraphicsAPI.h"
 #include "ConsoleManager.h"
+#include "SDLBridge.h"
 #include "imgui.h"
+
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include <SDL3/SDL_video.h>
+#endif
+
+#ifndef ORBITER_BUILD_SDLGPUCLIENT
 #include "imgui_impl_win32.h"
+#endif
+
 #include <filesystem>
 
 #include "Tracy.hpp"
@@ -56,7 +69,15 @@ using namespace oapi;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-#define OUTPUT_DBG
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include <SDL3/SDL_main.h>
+#define WINMAIN SDL_main
+extern IMGUI_IMPL_API LRESULT ImGui_ImplSdl3WndProcHandler(SDL_Window* win, uintptr_t msg, uintptr_t wParam, intptr_t lParam);
+#else
+#define WINMAIN WinMain
+#endif
+
+extern "C" int WINMAIN(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR strCmdLine, INT nCmdShow);
 #define LOADSTATUSCOL 0xC08080 //0xFFD0D0
 
 //#define OUTPUT_TEXTURE_INFO
