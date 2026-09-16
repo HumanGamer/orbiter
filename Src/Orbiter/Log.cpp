@@ -5,8 +5,12 @@
 
 #include <string.h>
 #include <fstream>
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include <platform_sdl.h>
+#else
 #include <Windows.h>
 #include <Psapi.h>
+#endif
 #include "Log.h"
 #include "Orbiter.h"
 

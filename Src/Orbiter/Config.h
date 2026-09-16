@@ -11,7 +11,11 @@
 #define __CONFIG_H
 
 //#include <d3d.h>
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include "Vecmat.h"
 #include <iostream>
 #include <fstream>

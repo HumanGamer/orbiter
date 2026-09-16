@@ -14,6 +14,7 @@
 // Name: CDIFramework7()
 // Desc: Constructor
 //-----------------------------------------------------------------------------
+#ifndef ORBITER_BUILD_SDLGPUCLIENT
 CDIFramework7::CDIFramework7 ()
 {
 	m_pDI             = NULL;

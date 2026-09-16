@@ -5,7 +5,11 @@
 // ScenarioTab class
 //=============================================================================
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <direct.h>
 #include <string>
 #include "Orbiter.h"

@@ -4,7 +4,11 @@
 #ifndef __ELEVMGR_H
 #define __ELEVMGR_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include "windows.h"
+#endif
 #include "vecmat.h"
 #include "ZTreeMgr.h"
 #include <vector>

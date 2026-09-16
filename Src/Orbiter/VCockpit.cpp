@@ -9,6 +9,11 @@
 #include "Texture.h"
 #include "Log.h"
 #include "Util.h"
+#include "Vecmat.h"
+
+// External math functions
+void qrdcmp (Matrix4 &a, Vector4 &c, Vector4 &d, int *sing = 0);
+void qrsolv (const Matrix4 &a, const Vector4 &c, const Vector4 &d, Vector4 &b);
 
 using namespace std;
 

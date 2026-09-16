@@ -13,7 +13,11 @@
 
 #include "Orbitersdk.h"
 #include <stdio.h>
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "../include/platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 
 #ifndef _WIN32
 typedef void *HDC;

@@ -10,8 +10,13 @@
 #define __PANE_H
 
 #define STRICT 1
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <mmsystem.h>
+#include "Orbiter.h"
 #include "Orbiter.h"
 #include "Body.h"
 #include "Mfd.h"
@@ -28,6 +33,10 @@
 // forward declarations
 
 class HUD;
+class DefaultPanel;
+class VirtualCockpit;
+class MenuInfoBar;
+class Panel;
 class Vessel;
 
 struct MFDspec {        // panel MFD specs

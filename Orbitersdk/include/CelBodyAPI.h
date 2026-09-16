@@ -23,6 +23,8 @@
 #ifndef __CELBODYAPI_H
 #define __CELBODYAPI_H
 
+class ATMOSPHERE;
+
 // ===========================================================================
 /// \ingroup defines
 /// \defgroup ephem Ephemeris data format bitflags

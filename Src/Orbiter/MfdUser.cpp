@@ -17,7 +17,11 @@
 #include <iomanip>
 #include "Log.h"
 #include "Util.h"
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 
 using namespace std;
 

@@ -2,7 +2,11 @@
 // Licensed under the MIT License
 
 #define STRICT 1
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <stdio.h>
 #include <io.h>
 #include <time.h>

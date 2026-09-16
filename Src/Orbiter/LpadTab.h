@@ -4,7 +4,11 @@
 #ifndef __LPADTAB_H
 #define __LPADTAB_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include "Config.h"
 #include "Launchpad.h"
 

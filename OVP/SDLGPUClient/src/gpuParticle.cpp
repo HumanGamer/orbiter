@@ -31,13 +31,11 @@ private:
 bool GpuParticlePipeline::Initialize(SDL_GPUDevice* device) {
     device_ = device;
     
-    // Create particle vertex buffer (GPU-resident) for streaming updates
-    SDL_GPUBufferDesc desc{};
-    desc.usage = SDL_GPU_BUFFERUSAGE_VERTEX | SDL_GPU_BUFFERUSAGE_TRANSFER;
-    desc.size = MAX_PARTICLES * sizeof(PARTICLE);
-    particle_buf_ = SDL_CreateGPUBuffer(device, &desc);
+    // Particle vertex buffer placeholder - not implemented yet
+    particle_buf_ = nullptr;
+    max_particles_ = 0;
     
-    return particle_buf_ != nullptr;
+    return true;
 }
 
 void GpuParticlePipeline::Shutdown() {
@@ -50,20 +48,17 @@ void GpuParticlePipeline::Shutdown() {
 void GpuParticlePipeline::Reset() {}
 
 void GpuParticlePipeline::CreateEmitter(int max_particles, SURFHANDLE tex) {
-    // Allocate compute buffer for particle system updates
-    
+    texture_ = tex;
+    max_particles_ = max_particles;
 }
 
 void GpuParticlePipeline::RenderParticles(const PARTICLE* particles, int count, 
                                            const float* view, float alpha) {
-    if (!particle_buf_) return;
-    
-    SDL_GPUCmdBuffer cmd = SDL_AcquireGPUPass(device_, color_targets[], 0, nullptr);
-    if (!cmd) return;
-    
-    // Upload particle data to GPU buffer
-    // Render as billboarded quads (6 vertices per particle -> triangle strip
-    
+    // TODO: particle rendering via SDL_GPU draw pipeline
+    (void)particles;
+    (void)count;
+    (void)view;
+    (void)alpha;
 }
 
 GPUPipeline* PipelineFactory::CreateParticlePipeline() {

@@ -8,7 +8,11 @@
 #ifndef __DIALOGWIN_H
 #define __DIALOGWIN_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include "GraphicsAPI.h"
 
 #define WM_USERMESSAGE (WM_USER+10)

@@ -6,7 +6,11 @@
 //=============================================================================
 
 #define STRICT 1
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <commctrl.h>
 #include "LpadTab.h"
 #include "Launchpad.h"

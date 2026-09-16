@@ -11,7 +11,11 @@
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <direct.h>
 #include <stdio.h>
 #include <time.h>
@@ -71,8 +75,12 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
 #include <SDL3/SDL_main.h>
-#define WINMAIN SDL_main
 extern IMGUI_IMPL_API LRESULT ImGui_ImplSdl3WndProcHandler(SDL_Window* win, uintptr_t msg, uintptr_t wParam, intptr_t lParam);
+INT WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, INT);
+extern "C" int SDL_main(int argc, char* argv[]) {
+    HINSTANCE hInst = (HINSTANCE)0x1;
+    return (int)WinMain(hInst, NULL, argv[0], SW_SHOWDEFAULT);
+}
 #else
 #define WINMAIN WinMain
 #endif
@@ -173,7 +181,7 @@ HANDLE hConsoleMutex = 0;
 // _matherr()
 // trap global math exceptions
 
-int _matherr(struct _exception *except )
+int _matherr(_exception *except )
 {
 	if (!strcmp (except->name, "acos")) {
 		except->retval = (except->arg1 < 0.0 ? Pi : 0.0);
@@ -215,9 +223,9 @@ INT WINAPI WinMain (HINSTANCE hInstance, HINSTANCE, LPSTR strCmdLine, INT nCmdSh
 	// Initialise the log
 	INITLOG("Orbiter.log", g_pOrbiter->Cfg()->CfgCmdlinePrm.bAppendLog); // init log file
 #ifdef ISBETA
-	LOGOUT("Build %s BETA [v.%06d]", __DATE__, GetVersion());
+	LOGOUT("Build %s BETA [v.%06d]", __DATE__, ORBITER_GetVersion());
 #else
-	LOGOUT("Build %s [v.%06d]", __DATE__, GetVersion());
+	LOGOUT("Build %s [v.%06d]", __DATE__, ORBITER_GetVersion());
 #endif
 
 	// Initialise random number generator
@@ -515,7 +523,7 @@ VOID Orbiter::CloseApp (bool fast_shutdown)
 }
 
 //-----------------------------------------------------------------------------
-// Name: GetVersion()
+// Name: ORBITER_GetVersion()
 // Desc: Returns orbiter build version as integer in YYMMDD format
 //-----------------------------------------------------------------------------
 int Orbiter::GetVersion () const
@@ -1047,18 +1055,21 @@ INT Orbiter::Run ()
 
 	while (WM_QUIT != msg.message) {
 
-        // Use PeekMessage() if the app is active, so we can use idle time to
-        // render the scene. Else, use GetMessage() to avoid eating CPU time.
 		if (bSession) {
             bGotMsg = PeekMessage (&msg, NULL, 0U, 0U, PM_REMOVE);
 		} else {
             bGotMsg = GetMessage (&msg, NULL, 0U, 0U);
 		}
         if (bGotMsg) {
-			if (!m_pLaunchpad || !m_pLaunchpad->ConsumeMessage(&msg)) {
-				TranslateMessage (&msg);
-				DispatchMessage (&msg);
-			}
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+					static EventQueueEntry queued[64];
+					SdlBridge::PumpWindowEvents(queued, 64);
+#else
+					if (!m_pLaunchpad || !m_pLaunchpad->ConsumeMessage(&msg)) {
+						TranslateMessage (&msg);
+						DispatchMessage (&msg);
+					}
+#endif
 		} else {
 			if (bSession) {
 				if (bAllowInput) bActive = true, bAllowInput = false;
@@ -2604,10 +2615,16 @@ LRESULT Orbiter::MsgProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		return 0;
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+	case SDL_SYSWMEVENT:
+		SdlDialogWindow::ProcessDialogMessages();
+		break;
+#endif
+
 #ifdef UNDEF
-		// These messages could be intercepted to suspend the simulation
-		// during resizing and menu operations. Not a good idea for real-time
-		// applications though
+	// These messages could be intercepted to suspend the simulation
+	// during resizing and menu operations. Not a good idea for real-time
+	// applications though
     case WM_ENTERMENULOOP:  // Pause the app when menus are displayed
         Pause (TRUE);
         break;

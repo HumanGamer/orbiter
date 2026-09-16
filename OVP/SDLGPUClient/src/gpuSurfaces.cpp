@@ -10,10 +10,13 @@
 #include "../include/gpuSurface.h"
 #include "../include/gpuTypes.h"
 #include <SDL3/SDL_video.h>
+#include <SDL3/SDL_gpu.h>
 #include <stb/stb_image.h>
 
 class GpuSurfaceManagerImpl : public GpuSurfaceManager {
 public:
+    explicit GpuSurfaceManagerImpl(SDL_GPUDevice* device) : device_(device) {}
+    
     SURFHANDLE CreateTexture(int width, int height, SDL_GPUTextureFormat format) override;
     void UpdateTexture(SURFHANDLE surf, const uint8_t* data, int w, int h) override;
     void Blit(SDL_GPUCmdBuffer cmd, SURFHANDLE src, SDL_GPUTexture* dstTex, 
@@ -35,6 +38,7 @@ private:
     
     std::unordered_map<uint32_t, SurfaceEntry> surfaces_;
     mutable SDL_mutex* mutex_ = nullptr;
+    SDL_GPUDevice* device_ = nullptr;
 };
 
 SURFHANDLE GpuSurfaceManagerImpl::CreateTexture(int width, int height, SDL_GPUTextureFormat format) {
@@ -64,12 +68,23 @@ void GpuSurfaceManagerImpl::UpdateTexture(SURFHANDLE surf, const uint8_t* data, 
     auto it = surfaces_.find(surf.getID());
     if (it == surfaces_.end() || !it->second.texture) return;
     
-    SDL_GPUImageData img{};
-    img.data = data;
-    img.pixel_height = h;
-    img.slice_length = w * 4; // assuming RGBA
+    SDL_GPUTransferBufferDesc tbuf_desc{};
+    tbuf_desc.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+    tbuf_desc.size = w * h * 4;
+    SDL_GPUTransferBuffer* tbuf = SDL_CreateGPUTransferBuffer(device_, &tbuf_desc);
     
-    SDL_UploadToGPUTexture(device_, it->second.texture, &img, 1);
+    SDL_CPUCopyToGPUTransferBuffer(device_, tbuf, data, w * h * 4);
+    
+    SDL_GPUCmdBuffer cmd = SDL_AquireGPUTempCommandBuffer(device_, 0);
+    if (cmd) {
+        SDL_GPUBlitInfo blit{};
+        blit.src_image.texture = nullptr;
+        blit.dst_image.texture = it->second.texture;
+        SDL_UploadToGPUTextureFromCPUBuffer(cmd, tbuf, {0, 0, 0, w}, it->second.texture, {0, 0, w, h});
+        SDL_ReleaseGPUTempCommandBuffer(device_, cmd);
+    }
+    
+    SDL_DestroyGPUTransferBuffer(device_, tbuf);
 }
 
 SDL_GPUTexture* GpuSurfaceManagerImpl::GetNativeTexture(SURFHANDLE surf) const {
@@ -103,7 +118,6 @@ void GpuSurfaceManagerImpl::GenerateMipmaps(SDL_GPUCmdBuffer cmd,
                                             uint32_t width, uint32_t height) {
     if (!cmd || !tex) return;
     
-    // Generate mip levels using blit command or compute pass
     int mip_levels = SDL_CalculateGPUTextureMipCount(width, height);
     for (int i = 1; i < mip_levels; i++) {
         uint32_t src_w = width >> (i-1);
@@ -113,18 +127,22 @@ void GpuSurfaceManagerImpl::GenerateMipmaps(SDL_GPUCmdBuffer cmd,
         
         SDL_GPUBlitInfo blit{};
         blit.src_image.texture = tex;
-        blit.src_image.source_rect = {0, 0, src_w, src_h};
-        blit.src_image.level = i - 1;
         blit.dst_image.texture = tex;
-        blit.dst_image.source_rect = {0, 0, dst_w, dst_h};
+        SDL_Rect src_rect = {0, 0, (int)src_w, (int)src_h};
+        SDL_Rect dst_rect = {0, 0, (int)dst_w, (int)dst_h};
+        blit.src_image.source_rect = &src_rect;
+        blit.dst_image.destination_rect = &dst_rect;
+        blit.src_image.level = i - 1;
         blit.dst_image.level = i;
-        blit.op = SDL_GPU_BLENDOP_ADD;
         
         SDL_BlitGPUCommandBuffer(cmd, &blit);
     }
 }
 
-// Global function to create manager instance
+namespace GpuSurface {
+
 GpuSurfaceManager* CreateGpuSurfaceManager(SDL_GPUDevice *device) {
-    return new GpuSurfaceManagerImpl();
+    return new GpuSurfaceManagerImpl(device);
 }
+
+} // namespace GpuSurface

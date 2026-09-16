@@ -7,7 +7,11 @@
 
 #pragma once
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include <cstdint>
+#else
 #include <windows.h>
+#endif
 
 #include "XRSound.h"   
 #include "XRSoundEngine.h" 

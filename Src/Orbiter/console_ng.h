@@ -4,7 +4,11 @@
 #ifndef __console_ng_h
 #define __console_ng_h
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 
 class Orbiter;
 

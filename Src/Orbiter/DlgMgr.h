@@ -5,7 +5,11 @@
 #define __DLGMGR_H
 
 #define STRICT 1
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 
 #include "DialogWin.h"
 #include "Orbiter.h"
@@ -14,7 +18,7 @@
 #include "imgui_extras.h"
 class ImGuiDialog;
 
-class oapi::GraphicsClient;
+namespace oapi { class GraphicsClient; }
 extern Orbiter *g_pOrbiter;
 
 struct DIALOGENTRY {

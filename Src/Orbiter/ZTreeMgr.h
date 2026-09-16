@@ -10,7 +10,11 @@
 #define __ZTREEMGR_H
 
 #include <iostream>
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 
 // =======================================================================
 // Tree node structure

@@ -247,7 +247,7 @@ bool Vessel::OpenConfigFile (ifstream &cfgfile) const
 	if (cfgfile.good()) return true;
 	else {
 		cfgfile.clear();
-		LOGOUT_ERR_FILENOTFOUND_MSG(g_pOrbiter->ConfigPath(cbuf + 8), "No vessel class configuration file found for: %s", classname ? classname : name);
+		LOGOUT_ERR_FILENOTFOUND_MSG(g_pOrbiter->ConfigPath(cbuf + 8), "No vessel class configuration file found for: %s", classname ? classname : name.c_str());
 		//LogOut (">>> ERROR: No vessel class configuration file found for:");
 		//LOGOUT_ERR(classname ? classname : name);
 		return false;
@@ -4262,7 +4262,7 @@ void Vessel::UpdateAerodynamicForces_OLD ()
 	if (LiftCoeff && (Cl = LiftCoeff (aoa))) {
 		Lift = Cl * sp.dynp * cs.y;    // lift magnitude
 		Vector L (0, sp.airvel_ship.z, -sp.airvel_ship.y); // lift direction
-		double lnorm = std::hypot (sp.airvel_ship.z, sp.airvel_ship.y);
+		double lnorm = sqrt (sp.airvel_ship.z * sp.airvel_ship.z + sp.airvel_ship.y * sp.airvel_ship.y);
 		if (lnorm) {
 			L *= Lift / lnorm;
 			Flin_add += L;

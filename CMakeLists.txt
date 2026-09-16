@@ -196,7 +196,7 @@ option(
 option(
 	ORBITER_BUILD_XRSOUND
 	"Build XRSound module to enable sound in Orbiter"
-	ON
+	${NOT_ORBITER_BUILD_SDLGPUCLIENT}
 )
 
 option(ORBITER_MAKE_DOC
@@ -244,6 +244,7 @@ if(NOT SDL3_FOUND AND ORBITER_BUILD_SDLGPUCLIENT)
 	message(FATAL_ERROR "SDL3 not found. Install via homebrew (macOS), vcpkg (Windows), or package manager (Linux).")
 elseif(SDL3_FOUND)
 	message(STATUS "Found SDL3: ${SDL3_INCLUDE_DIRS}")
+	add_compile_definitions(ORBITER_BUILD_SDLGPUCLIENT)
 endif()
 find_package(SDL3_shadercross QUIET)
 if(NOT SDL3_shadercross_FOUND AND ORBITER_BUILD_SDLGPUCLIENT)

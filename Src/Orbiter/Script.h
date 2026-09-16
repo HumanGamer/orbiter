@@ -6,6 +6,8 @@
 
 #include "Orbiter.h"
 
+namespace oapi {
+
 class ScriptInterface {
 public:
 	ScriptInterface (Orbiter *pOrbiter);
@@ -23,5 +25,7 @@ private:
 	Orbiter *orbiter;
 	HINSTANCE hLib;
 };
+
+} // namespace oapi
 
 #endif // !__INTERPRETER_H

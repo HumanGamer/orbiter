@@ -19,8 +19,12 @@
 
 #pragma once
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#endif
 #include <cstdint>
 #include <vector>
+#include <set>
 #include <functional>
 
 struct EventQueueEntry {
@@ -88,7 +92,7 @@ public:
     static int RunMessageLoop();
     
     /** Translate SDL event to WM_* code - add to event queue */
-    static void PumpWindowEvents(EventQueueEntry& out_events[], uint32_t max_entries);
+    static void PumpWindowEvents(EventQueueEntry* out_events, uint32_t max_entries);
     
     /** Inject a synthesized WM_* message (used for dialog responses) */  
     static void PostSysMessage(uint32_t msg, uintptr_t wparam = 0, int64_t lparam = 0);
@@ -113,6 +117,7 @@ public:
     void OnKeyUp(uint16_t vk);
 
 private:
+    std::set<uint16_t> state_;
     std::vector<int64_t> key_timestamps_; // Maps VK code → last-pressed timestamp
 };
 

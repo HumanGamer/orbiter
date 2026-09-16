@@ -10,7 +10,7 @@
 #include "Orbiter.h"
 
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
-#include <SDL3/SDL_gamecontroller.h>
+#include "SDL_gamecontroller.h"
 #include <SDL3/SDL_joystick.h>
 #endif
 
@@ -69,8 +69,7 @@ void DInput::SetRenderWindow(HWND hWnd)
 	m_hWnd = hWnd;
 #endif
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
-	void** p = (void**)&sdl_window_handle;
-	*p = (uintptr_t)hWnd;
+	sdl_window_handle = (uintptr_t)hWnd;
 #endif
 }
 

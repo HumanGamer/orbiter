@@ -56,7 +56,7 @@ set(common_src
 	DlgOptions.cpp
 	DlgRecorder.cpp
 	DlgTacc.cpp
-	htmlctrl.c
+# htmlctrl.c is Windows-only
 	Select.cpp
 	OptionsPages.cpp
 # Body classes
@@ -102,25 +102,25 @@ set(common_src
 	CamAPI.cpp
 	CelSphereAPI.cpp
 	DrawAPI.cpp
-	GraphicsAPI.cpp
+# GraphicsAPI.cpp excluded for SDLGPUCLIENT - uses WIC/Windows
 	MFDAPI.cpp
 	ModuleAPI.cpp
 	OrbiterAPI.cpp
 # Graphics utils
 	D3d7util.cpp
 	D3dmath.cpp
-	Di7frame.cpp
-# SDL bridge (cross-platform event/input)
+# Di7frame.cpp excluded for SDLGPUCLIENT - uses DirectInput
+# SDL bridge
 	src/SdlBridge.cpp
 # Utils
 	Log.cpp
 	Memstat.cpp
-	Util.cpp
+# Util.cpp excluded for SDLGPUCLIENT - uses shlobj.h
 	ZTreeMgr.cpp
 # Resources
 	Orbiter.rc
 	Orbiter.ico
-	${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp
+# imgui_impl_win32.cpp excluded for SDLGPUCLIENT
 )
 
 set(Orbiter_includes
@@ -129,8 +129,17 @@ set(Orbiter_includes
 	${CMAKE_SOURCE_DIR}/OVP
 	${CMAKE_CURRENT_BINARY_DIR}
 	${HTMLHELP_INCLUDE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+	if(ORBITER_BUILD_SDLGPUCLIENT OR SDL3_FOUND)
+	set(Orbiter_common_libs
+		zlib
+		$<TARGET_FILE:Orbitersdk>
+	)
+	set(Orbiter_libs SDL3::SDL3 stb_image)
+	set(Orbiter_depends Orbitersdk)
+else()
 	set(Orbiter_common_libs
 		comctl32.lib
 		UxTheme.lib
@@ -141,20 +150,12 @@ set(Orbiter_includes
 		$<TARGET_FILE:Orbitersdk>
 		$<TARGET_FILE:DlgCtrl>
 	)
-
-	if(ORBITER_BUILD_SDLGPUCLIENT OR SDL3_FOUND)
-		set(Orbiter_libs SDL3::SDL3 stb::image)
-	else()
-		set(Orbiter_libs
-			dxguid.lib
-			dinput8.lib
-		)
-	endif()
-
-set(Orbiter_depends
-	Orbitersdk
-	DlgCtrl
-)
+	set(Orbiter_libs
+		dxguid.lib
+		dinput8.lib
+	)
+	set(Orbiter_depends Orbitersdk DlgCtrl)
+endif()
 
 # Orbiter executable (graphics server version)
 add_executable(Orbiter ${common_src})
@@ -169,6 +170,10 @@ set_target_properties(Orbiter
 	FOLDER Core
 )
 
+if(APPLE)
+	target_compile_options(Orbiter PRIVATE -fdeclspec)
+endif()
+
 target_include_directories(Orbiter PUBLIC ${Orbiter_includes} ${TRACY_CLIENT_INCLUDE} ${imgui_SOURCE_DIR}/ ${imgui_SOURCE_DIR}/backends ${implot_SOURCE_DIR}/)
 
 target_link_libraries(Orbiter ${Orbiter_common_libs} ${Orbiter_libs} ${TRACY_CLIENT})
@@ -182,7 +187,9 @@ install(TARGETS Orbiter	RUNTIME DESTINATION ${ORBITER_INSTALL_ROOT_DIR})
 set_target_properties(Orbiter PROPERTIES ENABLE_EXPORTS 1)
 
 # ...we have to use the NG version to export the API links
-install(FILES $<TARGET_LINKER_FILE:Orbiter>	DESTINATION ${ORBITER_INSTALL_SDK_DIR}/lib)
+if(NOT APPLE)
+	install(FILES $<TARGET_LINKER_FILE:Orbiter>	DESTINATION ${ORBITER_INSTALL_SDK_DIR}/lib)
+endif()
 
 # Copy library to its Orbitersdk/lib location so that external project integrated into the build can find it
 add_custom_command(TARGET ${OrbiterTgt}	POST_BUILD

@@ -6,6 +6,7 @@
 
 // Shared types between SDLGPUClient and Orbiter core using SDL_gpu
 
+#include <cmath>
 #include <SDL3/SDL_gpu.h>
 #include <SDL3_shadercross/SDL_shadercross.h>
 
@@ -20,19 +21,27 @@
 struct SURFACEDESC;
 class GPUBackend;
 class GPUPipeline;
+namespace oapi {
+    class Sketchpad;
+};
 
-// Texture/surface handle wrapper
+// Texture/surface handle wrapper 
 // Opaque handle pointing to GPU backend internal data  
 class SURFHANDLE {
 public:
     SURFHANDLE() : id(0) {}
     SURFHANDLE(uint32_t i) : id(i) {}
+    explicit SURFHANDLE(void* ptr) : id(ptr ? (uint32_t)(uintptr_t)ptr : 0) {}
     
+    operator uint32_t() const { return id; }
     operator bool() const { return id != 0; }
     uint32_t getID() const { return id; }
+    void* getPtr() const { return id ? (void*)(uintptr_t)id : nullptr; }
     
     bool operator==(const SURFHANDLE& o) const { return id == o.id; }
     bool operator!=(const SURFHANDLE& o) const { return id != o.id; }
+    SURFHANDLE& operator=(uint32_t i) { id = i; return *this; }
+    SURFHANDLE& operator=(void* ptr) { id = ptr ? (uint32_t)(uintptr_t)ptr : 0; return *this; }
 
 private:
     uint32_t id;

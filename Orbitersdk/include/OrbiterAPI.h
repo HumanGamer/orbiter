@@ -23,13 +23,20 @@
 #define _CRT_SECURE_NO_DEPRECATE 
 #endif
 #endif
+
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
 #include <fstream>
-#include <windows.h>
 #include <float.h>
 #include <math.h>
 #include <vector>
+#include <stdint.h>
+#define STRICT 1
+#include "platform_sdl.h"
+#else
+#include <windows.h>
+#endif
 
-#if defined(_MSC_VER) && (_MSC_VER < 1920 ) // Microsoft Visual Studio Version 2017 and lower
+#if !defined(ORBITER_BUILD_SDLGPUCLIENT) && defined(_MSC_VER) && (_MSC_VER < 1920 ) // Microsoft Visual Studio Version 2017 and lower
 #include <algorithm>
 #endif
 
@@ -38,9 +45,21 @@ extern "C" {
 }
 
 // Assumes MS VC++ compiler. Modify these statements for other compilers
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#ifndef DLLEXPORT
+#define DLLEXPORT
+#endif
+#ifndef DLLIMPORT
+#define DLLIMPORT
+#endif
+#ifndef DLLCLBK
+#define DLLCLBK
+#endif
+#else
 #define DLLEXPORT __declspec(dllexport)
 #define DLLIMPORT __declspec(dllimport)
 #define DLLCLBK extern "C" __declspec(dllexport)
+#endif
 
 #ifdef OAPI_IMPLEMENTATION
 #define OAPIFUNC DLLEXPORT

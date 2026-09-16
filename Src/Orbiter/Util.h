@@ -4,7 +4,11 @@
 #ifndef __UTIL_H
 #define __UTIL_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include "Vecmat.h"
 #include "OrbiterAPI.h"
 #include "Orbiter.h"

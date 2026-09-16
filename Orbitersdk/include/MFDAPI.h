@@ -19,6 +19,7 @@
 #include "OrbiterAPI.h"
 
 class Instrument;
+class Instrument_User;
 
 // ======================================================================
 // class MFD

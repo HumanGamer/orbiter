@@ -5,8 +5,12 @@
 #define __TEXTURE_H
 
 #define STRICT 1
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
 #include <d3d.h>
+#endif
 #include <stdio.h>
 
 #define MAXFMT 6 // max number of different pixel formats

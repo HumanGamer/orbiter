@@ -9,7 +9,11 @@
 #ifndef DI7FRAME_H
 #define DI7FRAME_H
 #define STRICT 1
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #ifdef HAS_DINPUT
 #include <dinput.h>
 #include <d3d.h>
@@ -24,7 +28,7 @@ public:
 	~CDIFramework7() { SDL_joy_cleanup(); }
 
 	HRESULT Create(HINSTANCE) { 
-		SDL_InitSubsystem(SDL_INIT_GAMECONTROLLER); 
+		SDL_InitSubSystem(SDL_INIT_GAMEPAD); 
 		return S_OK; 
 	}
 	VOID Destroy() { SDL_joy_cleanup(); }
@@ -38,10 +42,10 @@ public:
 	HRESULT CreateMouseDevice(HWND) { return S_OK; }
 	HRESULT CreateJoyDevice(HWND,	DWORD idx = 0) { 
 		joy_count = SDL_GetNumGameControllers();
-		if (idx < joy_count) sdl_ctrl = SDL_OpenGameController(idx);
+		if (idx < joy_count) sdl_ctrl = SDL_GameControllerOpen(idx);
 		return S_OK; 
 	}
-	void DestroyJoyDevice() { if(sdl_ctrl){SDL_CloseGameController(sdl_ctrl); sdl_ctrl=nullptr;} }
+	void DestroyJoyDevice() { if(sdl_ctrl){SDL_GameControllerClose(sdl_ctrl); sdl_ctrl=nullptr;} }
 	void DestroyDevices() { DestroyJoyDevice(); }
 
 	LPDIRECTINPUTDEVICE8 GetKbdDevice() { return nullptr; }

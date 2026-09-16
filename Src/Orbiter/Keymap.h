@@ -8,7 +8,11 @@
 #ifndef __KEYMAP_H
 #define __KEYMAP_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include "windows.h"
+#endif
 #include "Orbitersdk.h"
 
 // key modifier list

@@ -7,7 +7,11 @@
 
 #define OAPI_IMPLEMENTATION
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include "Orbiter.h"
 #include "TabVideo.h"
 #include "resource.h"

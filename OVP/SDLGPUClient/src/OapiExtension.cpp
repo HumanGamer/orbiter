@@ -7,9 +7,11 @@
  */
 
 #include "gcCore.h"
-#inc luding "../include/gpuBackend.h"
+#include "../include/gpuBackend.h"
 #include <SDL3/SDL_video.h>
 #include <Orbitersdk/include/oapisdk.h>
+
+extern SDLGPU_graphicsClient *g_sdlgpu_gc;
 
 namespace oapi::gpu {
 
@@ -21,8 +23,8 @@ bool RegisterGraphicsClient(SDLGPU_graphicsClient *gc, SDL_Window* window) {
     if (!gc || !window) return false;
     
     g_sdlgpu_gc = gc;
-    gc->window_ = window;
-    gc->device_ = SDL_GetDefaultGPUWindowTexture(device_, 0); // Get default GPU device for window
+    gc->SetWindow(window);
+    gc->device_ = SDL_GetDefaultGPUDevice(SDL_GPU_TARGETMASK_FROM_WINDOW | SDL_GPU_TARGETMASK_PRESENTABLE, (SDL_Window*)0); // Get default GPU device for window
     
     if (!gc->clbkInitialise()) {
         return false;
@@ -38,17 +40,13 @@ bool RegisterGraphicsClient(SDLGPU_graphicsClient *gc, SDL_Window* window) {
 }
 
 /** Get SDL_gpu device from existing render window */
-SDL_GPUDevice *GetGPUDevice(SDL_Window* win) {
+SDL_GPUDevice *CreateGPUDevice(SDL_Window* win) {
     // Query which default GPU can present to this window
     int n = SDL_GetNumGPUDisplayModes(0);
     for (int i = 0; i < n; i++) {
-        SDL_GPUInfo info;
-        if (SDL_GetGPUDeviceProperties(i, &info) && 
-            SDL_GPUCanPresent(device_, i)) {
-            SDL_GPUDevice *dev = SDL_CreateGPUDevice(
-                SDL_GPU_SHADERFORMAT_ANY, 0);
-            if (dev) return dev;
-        }
+        SDL_GPUDevice *dev = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_ANY, 0);
+        if (dev) return dev;
+        break; // Only try default on macOS/Linux
     }
     // Fall back to default device
     return SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_ANY, 0);

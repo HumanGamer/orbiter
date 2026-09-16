@@ -3,11 +3,15 @@
 
 add_subdirectory(Orbiter)
 add_subdirectory(Orbitersdk)
-add_subdirectory(DlgCtrl)
+if(NOT ORBITER_BUILD_SDLGPUCLIENT)
+	add_subdirectory(DlgCtrl)
+endif()
 add_subdirectory(Celbody)
 add_subdirectory(Vessel)
 add_subdirectory(Module)
-add_subdirectory(Plugin)
+if(NOT ORBITER_BUILD_SDLGPUCLIENT)
+	add_subdirectory(Plugin)
+endif()
 
 # ==========================================================================
 # SDK Sample Installation

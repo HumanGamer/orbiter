@@ -4,9 +4,11 @@
 include(ExternalProject)
 
 add_subdirectory(Date)
-add_subdirectory(meshc)
-add_subdirectory(Pltex)
-add_subdirectory(Shipedit)
+if(NOT ORBITER_BUILD_SDLGPUCLIENT)
+	add_subdirectory(meshc)
+	add_subdirectory(Pltex)
+	add_subdirectory(Shipedit)
+endif()
 add_subdirectory(texpack)
 #add_subdirectory(tileedit/qt)
 

@@ -9,7 +9,11 @@
 #ifndef __NAV_H
 #define __NAV_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <fstream>
 #include "Vessel.h"
 

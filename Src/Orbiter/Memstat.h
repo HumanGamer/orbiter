@@ -4,8 +4,12 @@
 #ifndef __MEMSTAT_H
 #define __MEMSTAT_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
 #include <psapi.h>
+#endif
 
 typedef BOOL (CALLBACK *Proc_GetProcessMemoryInfo)(HANDLE,PPROCESS_MEMORY_COUNTERS,DWORD);
 

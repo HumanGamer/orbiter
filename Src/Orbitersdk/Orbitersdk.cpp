@@ -6,12 +6,34 @@
 // Contains standard module entry point and version information.
 // ========================================================================
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <fstream>
 #include <stdio.h>
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#define DLLCLBK extern "C"
+#define OAPIFUNC extern "C"
+#else
 #define DLLCLBK extern "C" __declspec(dllexport)
 #define OAPIFUNC __declspec(dllimport)
+#endif
+
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+// Stub DllMain for non-Windows - addons will use InitLib/ExitModule directly
+extern "C" void InitLib (HINSTANCE hModule) {}
+extern "C" int oapiGetModuleVersion ();
+
+DLLCLBK int GetModuleVersion (void)
+{
+	return oapiGetModuleVersion();
+}
+
+void dummy () {}
+#else
 
 BOOL WINAPI DllMain (HINSTANCE hModule,
 					 DWORD ul_reason_for_call,
@@ -51,3 +73,4 @@ DLLCLBK int GetModuleVersion (void)
 
 void dummy () {}
 
+#endif

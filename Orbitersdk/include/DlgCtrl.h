@@ -4,8 +4,17 @@
 #ifndef __DLGCTRL_H
 #define __DLGCTRL_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#define STRICT 1
+#include <stdint.h>
+#include "platform_sdl.h"
+extern "C" {
+#include <lua/lua.h>
+}
+#else
 #define STRICT 1
 #include "windows.h"
+#endif
 
 void oapiRegisterCustomControls (HINSTANCE hInst);
 void oapiUnregisterCustomControls (HINSTANCE hInst);
@@ -36,6 +45,9 @@ int oapiGetSwitchState (HWND hCtrl);
 
 // ==================================================================================
 // ==================================================================================
+
+class PropertyGroup;
+class PropertyList;
 
 class PropertyItem {
 	friend class PropertyGroup;

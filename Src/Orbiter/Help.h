@@ -5,7 +5,11 @@
 #define __HELP_H
 
 #define STRICT 1
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 
 void OpenHelp (HWND hWnd, const char *file, const char *topic);
 

@@ -9,6 +9,7 @@ add_library(DlgCtrl STATIC
 
 target_include_directories(DlgCtrl
 	PUBLIC ${CMAKE_SOURCE_DIR}/Orbitersdk/include
+		${CMAKE_SOURCE_DIR}/Src/Orbiter/include
 )
 
 set_target_properties(DlgCtrl

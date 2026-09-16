@@ -13,6 +13,9 @@
 #define __D3DMATH_CPP
 #define D3D_OVERLOADS
 #define STRICT
+
+// Workaround: force D3DVERTEX to have nx/ny/nz members
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
 #include <math.h>
 #include <stdio.h>
 #include "D3DMath.h"

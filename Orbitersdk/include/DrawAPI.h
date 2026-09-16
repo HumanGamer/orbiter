@@ -21,7 +21,9 @@
 
 #include "OrbiterAPI.h"
 #include <assert.h>
+#if defined(__x86_64__) || defined(__i386__)
 #include <xmmintrin.h>
+#endif
 
 #if defined(_MSC_VER) && (_MSC_VER < 1920 ) // Microsoft Visual Studio Version 2017 and lower
 #include <algorithm>
@@ -562,7 +564,9 @@ namespace oapi {
 			return D3DXVECTOR4(x, y, z, w);
 		}
 #endif
+#if defined(__x86_64__) || defined(__i386__)
 		__m128 xm;
+#endif
 		float data[4];
 		struct { float x, y, z, w; };
 		struct { float r, g, b, a; };
@@ -1660,7 +1664,7 @@ public:
 	/**
 	* \brief [DX9] Drawing function designed for drawing GUI elements. Buttons, Windows, Boxes, etc..  
 	*/
-	virtual void StretchRegion(const skpRegion* rgn, const SURFHANDLE hSrc, const LPRECT out) { assert(false); }
+	virtual void StretchRegion(const Sketchpad::skpRegion* rgn, const SURFHANDLE hSrc, const LPRECT out) { assert(false); }
 
 	/**
 	* \brief [DX9] Copy 'Blit' a tetragon

@@ -71,6 +71,18 @@ typedef struct {
 //} USERLABELSPEC;
 
 // =======================================================================
+// Class TileManager2 (stub for cross-platform builds)
+// =======================================================================
+template<class T>
+class TileManager2 {
+public:
+    TileManager2() {}
+    ~TileManager2() {}
+    void* GetTile(int x, int y) { return nullptr; }
+    void SetTile(int x, int y, void* tile) {}
+};
+
+// =======================================================================
 // Class Planet
 
 class Planet: public CelestialBody {

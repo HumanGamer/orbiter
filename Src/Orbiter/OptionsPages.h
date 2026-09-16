@@ -13,8 +13,12 @@
 #ifndef __OPTIONSPAGES_H
 #define __OPTIONSPAGES_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
 #include <CommCtrl.h>
+#endif
 #include "CustomControls.h"
 #include "OrbiterAPI.h"
 

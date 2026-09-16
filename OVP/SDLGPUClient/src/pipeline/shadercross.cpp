@@ -51,7 +51,7 @@ void ShutdownBackend() {
 
 ShaderCompilationResult CompileHLSLToMetal(const char* hlsl_code) {  
 #ifdef SDLGPU_SHADERCROSS_TARGET_METAL
-    auto compiled = SDL_shadercross_Compile HLSLtoMSL(hlsl_code, strlen(hlsl_code), 0);
+    auto compiled = SDL_shadercross_CompileHLSLtoMSL(hlsl_code, strlen(hlsl_code), (void*)0);
     if (compiled) {
         ShaderCompilationResult result{};
         result.bytecode = compiled->bytecode;
@@ -65,11 +65,11 @@ ShaderCompilationResult CompileHLSLToMetal(const char* hlsl_code) {
 
 ShaderCompilationResult CompileHLSLToDXBC(const char* hlsl_code) {  
 #ifdef SDLGPU_SHADERCROSS_TARGET_D3D12
-    auto compiled = SDL_shadercross_CompileHLSLtDXBC(hlsl_code, strlen(hlsl_code), 0);
+    auto compiled = SDL_shadercross_CompileHLSLtoDXBC(hlsl_code, strlen(hlsl_code), (void*)0);
     if (compiled) {
         ShaderCompilationResult result{};
-        result.bytecode = compiled->bytecode;  
-        result.bitCount = compiled->bytecode_size;
+        result.bytecode = compiled->shader_bytecode;  
+        result.byteCount = compiled->bytecode_size;
         SDL_free(compiled);
         return result;
     }
@@ -79,10 +79,10 @@ ShaderCompilationResult CompileHLSLToDXBC(const char* hlsl_code) {
 
 ShaderCompilationResult CompileHLSLToSPIRV(const char* hlsl_code) {
 #ifdef SDLGPU_SHADERCROSS_TARGET_VULKAN
-    auto compiled = SDL_shadercross_CompileHLSLtoSpirV(hlsl_code, strlen(hlsl_code), 0);
+    auto compiled = SDL_shadercross_CompileHLSLtoSpirV(hlsl_code, strlen(hlsl_code), (void*)0);
     if (compiled) {
         ShaderCompilationResult result{};
-        result.bytecode = compiled->bytecode;
+        result.bytecode = compiled->shader_bytecode;
         result.byteCount = compiled->bytecode_size;
         SDL_free(compiled);  
         return result;
@@ -94,11 +94,15 @@ ShaderCompilationResult CompileHLSLToSPIRV(const char* hlsl_code) {
 ShaderCompilationResult CompileHLSLToGLSL(const char* hlsl_code, 
                                           SDL_GPUShaderStage stage) {
 #ifdef SDLGPU_SHADERCROSS_TARGET_VULKAN
-    auto compiled = SDL_shadercross_CompileHLSLtoGLSL(hlsl_code, strlen(hlsl_code), stage, 0);
+    auto compiled = SDL_shadercross_CompileHLSLtoGLSL(hlsl_code, strlen(hlsl_code), stage);
     if (compiled) {
         ShaderCompilationResult result{};
-        result.bytecode = SDL_strdup(compile->text);  // GLSL is text output
-        result.byteCount = SDL_strlen(compile->text) + 1;
+        const char* text = (const char*)compiled->shader_bytecode;  // GLSL is text output as raw bytes
+        int len = compiled->bytecode_size;
+        result.bytecode = SDL_malloc(len + 1);
+        memcpy(result.bytecode, text, len);
+        ((char*)result.bytecode)[len] = '\0';
+        result.byteCount = (size_t)len + 1;
         SDL_free(compiled);
         return result;  
     }

@@ -10,8 +10,29 @@
 #ifndef D3DMATH_H
 #define D3DMATH_H
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+
+typedef uint32_t DWORD;
+typedef float D3DVALUE;
+typedef float FLOAT;
+#define D3DFVF_XYZ 0x001
+#define D3DFVF_TEX1 0x020
+#define D3DFVF_TEXCOORDSIZE2(idx) (4 << (idx * 4))
+
+#ifndef __D3DMATRIX_DEFINED__
+#define __D3DMATRIX_DEFINED__
+typedef struct {
+    FLOAT _11, _12, _13, _14;
+    FLOAT _21, _22, _23, _24;
+    FLOAT _31, _32, _33, _34;
+    FLOAT _41, _42, _43, _44;
+} D3DMATRIX;
+#endif
+#else
 #include <ddraw.h>
 #include <d3d.h>
+#endif
 
 // ============================================================================
 // Begin stuff added by MS

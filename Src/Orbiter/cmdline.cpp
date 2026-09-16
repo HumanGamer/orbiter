@@ -124,7 +124,7 @@ void CommandLine::MapKeys()
 		bool found = false;
 		for (auto it_key = keys.begin(); it_key < keys.end(); it_key++) {
 			if (isLong) {
-				if (!stricmp(it_key->longName, it->strKey.c_str()))
+				if (! _stricmp(it_key->longName, it->strKey.c_str()))
 					found = true;
 			}
 			else {

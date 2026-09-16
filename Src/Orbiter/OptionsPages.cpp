@@ -5,7 +5,11 @@
 // Template for simulation options pages
 // ======================================================================
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <array>
 #include "OptionsPages.h"
 #include "DlgCtrl.h"

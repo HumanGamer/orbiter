@@ -10,8 +10,13 @@
 #define __MESH_H
 
 #define OAPI_IMPLEMENTATION
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "d3d.h"
+#include "d3dtypes.h"
+#else
 #include <d3d.h>
 #include <d3dtypes.h>
+#endif
 #include <iostream>
 #include "OrbiterAPI.h"
 

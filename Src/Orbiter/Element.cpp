@@ -5,7 +5,11 @@
 #include "Element.h"
 #include "Config.h"
 #include <fstream>
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 #include <stdio.h>
 
 using namespace std;
@@ -521,7 +525,7 @@ void Elements::Calculate (const Vector &R, const Vector &V, double simt)
 	// DEBUG OUTPUT
 	if (!closed_orbit) {
 		double tra_limit = acos(-1.0/e);
-		sprintf (DBG_MSG, "tra=%f°, tra_limit=%f°, diff=%g°", priv_tra*DEG, tra_limit*DEG, (fabs(tra_limit)-fabs(priv_tra))*DEG);
+		sprintf (DBG_MSG, "tra=%fï¿½, tra_limit=%fï¿½, diff=%gï¿½", priv_tra*DEG, tra_limit*DEG, (fabs(tra_limit)-fabs(priv_tra))*DEG);
 	}
 #endif
 }

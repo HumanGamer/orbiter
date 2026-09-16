@@ -1578,15 +1578,15 @@ void CameraMode_Cockpit::Init (char *str)
 {
 	if (!str || str[0] == '\0') return;
 
-	if (!strnicmp(str, "generic", 7)) {
+	if (!_strnicmp(str, "generic", 7)) {
 		cmode = CM_GENERIC;
 		str += 7;
-	} else if (!strnicmp(str, "panel2d", 7)) {
+	} else if (!_strnicmp(str, "panel2d", 7)) {
 		cmode = CM_PANEL2D;
 		str += 7;
 		if (str[0] == ':' && sscanf(++str, "%d", &pos))
 			while (*str != ' ' && *str != '\0') str++;
-	} else if (!strnicmp(str, "vc", 2)) {
+	} else if (!_strnicmp(str, "vc", 2)) {
 		cmode = CM_VC;
 		str += 2;
 		if (str[0] == ':' && sscanf(++str, "%d", &pos)) {
@@ -1600,7 +1600,7 @@ void CameraMode_Cockpit::Init (char *str)
 				}
 			}
 		}
-	} else if (!strnicmp(str, "current", 7)) {
+	} else if (!_strnicmp(str, "current", 7)) {
 		cmode = CM_CURRENT;
 		str += 7;
 	}

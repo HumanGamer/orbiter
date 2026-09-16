@@ -9,7 +9,11 @@
 #include "Select.h"
 #include "Keymap.h"
 #include <stdio.h>
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "commctrl.h"
+#else
 #include <commctrl.h>
+#endif
 #include "Mesh.h"
 #include "TimeData.h"
 #include <chrono>
@@ -29,6 +33,7 @@ class PlaybackEditor;
 class MemStat;
 class DDEServer;
 class ImageIO;
+namespace oapi { class ScriptInterface; }
 namespace orbiter {
 	class ConsoleNG;
 	class LaunchpadDialog;
@@ -44,7 +49,7 @@ typedef void (*OPC_Proc)(void);
 // Desc: Main application class
 //-----------------------------------------------------------------------------
 class Orbiter {
-	friend class ScriptInterface;
+	friend class oapi::ScriptInterface;
 	friend class oapi::GraphicsClient;
 	friend class OrbiterGraphics;
 
@@ -162,7 +167,7 @@ public:
 	inline DWORD   ViewH() const { return viewH; }
 	inline DWORD   ViewBPP() const { return viewBPP; }
 	inline Config* Cfg() const { return pConfig; }
-	inline ScriptInterface *Script() const { return script; }
+	inline oapi::ScriptInterface *Script() const { return script; }
 	inline DialogManager *DlgMgr() const { return pDlgMgr; }
 	inline orbiter::LaunchpadDialog *Launchpad() const { return m_pLaunchpad; }
 	inline State*  PState() const { return pState; }
@@ -378,7 +383,7 @@ private:
 	oapi::ScreenAnnotation **snote;// onscreen annotations
 	DWORD           nsnote;        // number of annotations
 	oapi::ScreenAnnotation *snote_playback;// onscreen annotation during playback
-	ScriptInterface *script;
+	oapi::ScriptInterface *script;
 	INTERPRETERHANDLE hScnInterp;
 
 	// render parameters (only used if graphics client is present)

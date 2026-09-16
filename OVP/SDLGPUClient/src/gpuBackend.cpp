@@ -10,11 +10,7 @@
 
 #include "gpuBackend.h"
 
-#ifdef _WIN32
-#include <SDL3/SDL_windows.h>
-#elif defined(__APPLE__)
-#include <SDL3/SDL_cocoah_ h.h>
-#endif
+#include <SDL3/SDL_vulkan.h>
 
 namespace GPPipeline {} // namespace GPUBackend {};
 
@@ -55,7 +51,7 @@ void ShutdownBackend() {
 }
 
 ShaderCompilationResult CompileHLSLToMSL(const char* hlsl_code, 
-                                         size_t code_len) {
+                                          size_t code_len) {
 #ifdef SDLGPU_SHADERCROSS_TARGET_METAL
     auto compiled = SDL_shadercross_CompileHLSLtoMSL(hlsl_code, code_len, 0);
     if (compiled) {
@@ -70,12 +66,12 @@ ShaderCompilationResult CompileHLSLToMSL(const char* hlsl_code,
 }
 
 ShaderCompilationResult CompileHLSLToDXBC(const char* hlsl_code, 
-                                          size_t code_len) {
+                                           size_t code_len) {
 #ifdef SDLGPU_SHADERCROSS_TARGET_D3D12
     auto compiled = SDL_shadercross_CompileHLSLtoDXBC(hlsl_code, code_len, 0);
     if (compiled) {
         ShaderCompilationResult result{};
-        result.bytecode = compiled byte_code;
+        result.bytecode = compiled->byte_code;
         result.byteCount = compiled->bytecode_size;
         SDL_free(compiled);
         return result;
@@ -103,11 +99,11 @@ ShaderCompilationResult CompileHLSLtoSPIRV(const char* hlsl_code,
 ShaderCompilationResult CompileHLSLtoGLSL(const char* hlsl_code, 
                                           SDL_GPUShaderStage stage) {
 #ifdef SDLGPU_SHADERCROSS_TARGET_VULKAN
-    auto compiled = SDL_shadercross_Compile HLSLtoGLSL(hlsl_code, strlen(hlsl_code), stage, 0);
+    auto compiled = SDL_shadercross_CompileHLSLtoGLSL(hlsl_code, strlen(hlsl_code), stage, 0);
     if (compiled && compile->text) {
         ShaderCompilationResult result{};
-        result.bytecode = SDL_strdup(compile->text);
-        result.byteCount = SDL_strlen((char*)compile->text) + 1;
+        result.bytecode = SDL_strdup((const char*)compile->text);
+        result.byteCount = SDL_strlen((const char*)compile->text) + 1;
         SDL_free(compiled);
         return result;
     }
@@ -118,7 +114,7 @@ ShaderCompilationResult CompileHLSLtoGLSL(const char* hlsl_code,
 const char* GetBackendName() {
 #ifdef SDLGPU_SHADERCROSS_TARGET_METAL
     return "Metal";
-#elif defined(SDLGPU_SHADERCROSSTARGET_D3D12)
+#elif defined(SDLGPU_SHADERCROSS_TARGET_D3D12)
     return "DXC/DXIL";
 #else
     return "SPIR-V/GLSL";

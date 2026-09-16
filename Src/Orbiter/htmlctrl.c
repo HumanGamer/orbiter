@@ -20,11 +20,16 @@ the same level of OLE in-place activation.
 
 
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+// HTML control requires Win32/OLE - disable on non-Windows
+#error "htmlctrl.c requires Windows platform"
+#else
 #include <windows.h>
 #include <exdisp.h>		// Defines of stuff like IWebBrowser2. This is an include file with Visual C 6 and above
 #include <mshtml.h>		// Defines of stuff like IHTMLDocument2. This is an include file with Visual C 6 and above
 #include <mshtmhst.h>	// Defines of stuff like IDocHostUIHandler. This is an include file with Visual C 6 and above
 #include <crtdbg.h>		// for _ASSERT()
+#endif
 
 #define WORS_SUCCESS    0
 #define WORS_TIMEOUT    -1

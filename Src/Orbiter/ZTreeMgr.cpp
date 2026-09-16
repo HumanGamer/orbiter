@@ -203,7 +203,7 @@ DWORD ZTreeMgr::ReadData(DWORD idx, BYTE **outp)
 
 DWORD ZTreeMgr::Inflate(const BYTE *inp, DWORD ninp, BYTE *outp, DWORD noutp)
 {
-	DWORD ndata = noutp;
+	uLong ndata = noutp;
 	if (uncompress (outp, &ndata, inp, ninp) != Z_OK)
 		return 0;
 	return ndata;

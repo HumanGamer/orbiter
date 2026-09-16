@@ -1,7 +1,6 @@
 // Copyright (c) Martin Schweiger
 // Licensed under the MIT License
 
-#include <d3d.h>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -14,6 +13,11 @@
 #include "Log.h"
 #include "Shadow.h"
 #include "Util.h"
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include <d3d.h>
+#else
+#include <d3d.h>
+#endif
 
 using namespace std;
 

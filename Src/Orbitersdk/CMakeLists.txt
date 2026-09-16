@@ -25,7 +25,13 @@ set_target_properties(Orbitersdk
 
 target_include_directories(Orbitersdk
 	PUBLIC ${imgui_SOURCE_DIR}
+		${CMAKE_SOURCE_DIR}/Src/Orbiter/include
+		${CMAKE_SOURCE_DIR}/Orbitersdk/include
 )
+
+if(APPLE)
+	target_compile_options(Orbitersdk PRIVATE -fdeclspec)
+endif()
 
 
 # Copy library to its Orbitersdk/lib location so that external project integrated into the build can find it

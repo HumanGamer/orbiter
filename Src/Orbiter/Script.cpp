@@ -8,19 +8,19 @@
 const char *path = ".";
 const char *libname = "LuaInline";
 
-ScriptInterface::ScriptInterface (Orbiter *pOrbiter)
+oapi::ScriptInterface::ScriptInterface (Orbiter *pOrbiter)
 {
 	orbiter = pOrbiter;
 	hLib = NULL;
 }
 
-HINSTANCE ScriptInterface::LoadInterpreterLib ()
+HINSTANCE oapi::ScriptInterface::LoadInterpreterLib ()
 {
 	hLib = orbiter->LoadModule (path, libname);
 	return hLib;
 }
 
-INTERPRETERHANDLE ScriptInterface::NewInterpreter ()
+INTERPRETERHANDLE oapi::ScriptInterface::NewInterpreter ()
 {
 	if (!hLib && !LoadInterpreterLib()) return 0;
 	INTERPRETERHANDLE(*proc)() = (INTERPRETERHANDLE(*)())GetProcAddress (hLib, "opcNewInterpreter");
@@ -31,7 +31,7 @@ INTERPRETERHANDLE ScriptInterface::NewInterpreter ()
 	return 0;
 }
 
-int ScriptInterface::DelInterpreter (INTERPRETERHANDLE hInterp)
+int oapi::ScriptInterface::DelInterpreter (INTERPRETERHANDLE hInterp)
 {
 	if (!hLib && !LoadInterpreterLib()) return 0;
 	int(*proc)(INTERPRETERHANDLE) = (int(*)(INTERPRETERHANDLE))GetProcAddress (hLib, "opcDelInterpreter");
@@ -39,7 +39,7 @@ int ScriptInterface::DelInterpreter (INTERPRETERHANDLE hInterp)
 	else return 3;
 }
 
-INTERPRETERHANDLE ScriptInterface::RunInterpreter (const char *cmd)
+INTERPRETERHANDLE oapi::ScriptInterface::RunInterpreter (const char *cmd)
 {
 	if (!hLib && !LoadInterpreterLib()) return NULL;
 	INTERPRETERHANDLE(*proc)(const char*) = (INTERPRETERHANDLE(*)(const char*))GetProcAddress (hLib, "opcRunInterpreter");
@@ -48,7 +48,7 @@ INTERPRETERHANDLE ScriptInterface::RunInterpreter (const char *cmd)
 	return hInterp;
 }
 
-bool ScriptInterface::ExecScriptCmd (INTERPRETERHANDLE hInterp, const char *cmd)
+bool oapi::ScriptInterface::ExecScriptCmd (INTERPRETERHANDLE hInterp, const char *cmd)
 {
 	if (!hLib && !LoadInterpreterLib()) return false;
 	bool(*proc)(INTERPRETERHANDLE,const char*) = (bool(*)(INTERPRETERHANDLE,const char*))GetProcAddress (hLib, "opcExecScriptCmd");
@@ -56,7 +56,7 @@ bool ScriptInterface::ExecScriptCmd (INTERPRETERHANDLE hInterp, const char *cmd)
 	else      return false;
 }
 
-bool ScriptInterface::AsyncScriptCmd (INTERPRETERHANDLE hInterp, const char *cmd)
+bool oapi::ScriptInterface::AsyncScriptCmd (INTERPRETERHANDLE hInterp, const char *cmd)
 {
 	if (!hLib && !LoadInterpreterLib()) return false;
 	bool(*proc)(INTERPRETERHANDLE,const char*) = (bool(*)(INTERPRETERHANDLE,const char*))GetProcAddress (hLib, "opcAsyncScriptCmd");
@@ -64,7 +64,7 @@ bool ScriptInterface::AsyncScriptCmd (INTERPRETERHANDLE hInterp, const char *cmd
 	else      return false;
 }
 
-lua_State *ScriptInterface::GetLua (INTERPRETERHANDLE hInterp)
+lua_State *oapi::ScriptInterface::GetLua (INTERPRETERHANDLE hInterp)
 {
 	if (!hLib && !LoadInterpreterLib()) return NULL;
 	lua_State*(*proc)(INTERPRETERHANDLE)=(lua_State*(*)(INTERPRETERHANDLE))GetProcAddress(hLib, "opcGetLua");

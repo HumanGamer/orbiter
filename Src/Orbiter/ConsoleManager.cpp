@@ -1,6 +1,10 @@
 #include "ConsoleManager.h"
 
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+#include "platform_sdl.h"
+#else
 #include <windows.h>
+#endif
 
 bool ConsoleManager::IsConsoleExclusive(void) {
     DWORD pids[2];

@@ -1,10 +1,7 @@
-// Copyright (c) Martin Schweiger
-// Licensed under the MIT License
+# Copyright (c) Martin Schweiger
+# Licensed under the MIT License
 
-/**
- * @file CMakeLists.yml
- * @note Renamed from .txt - SDLGPUClient build instructions for graphics client
- */
+# SDLGPUClient build instructions for graphics client
 
 cmake_minimum_required(VERSION 3.19)
 
@@ -27,20 +24,16 @@ option(SDLGPU_SHADERCROSS_USE_METAL "Use Metal backend for SDL_gpu shader cross 
 option(SDL_GPU_SHADERCROSS_USE_D3D12 "Use D3D12/DXC backend for SDL_gup shadercross" OFF)
 
 if(APPLE)
-    option(SDLGPU_SHADERCROSS_TARGET METAL "Metal is default on macOS" ON)
-    add_compile_definitions(SDLGPU_SHADERCROSS_TARGET_METAL=1)
     set(SDLGPU_SHADERCROSS_TARGET "metal")
+    add_compile_definitions(SDLGPU_SHADERCROSS_TARGET_METAL=1)
 elseif(MSVC)
-    option(SDLGPU_SHADERCROSS_TARGET_D3D12 OFF "DXC/DXIL for D3D12 shader cross compilation on Windows" ON)
-    add_compile_definitions(SDLGPU_SHADERCROSS_TARGET_D3D12=1)
     set(SDLGPU_SHADERCROSS_TARGET "dxc")
+    add_compile_definitions(SDLGPU_SHADERCROSS_TARGET_D3D12=1)
 else()
-    # Linux defaults to Vulkan/SPIR-V
     find_package(Vulkan QUIET)
     if(Vulkan_FOUND)
-        option(SDLGPU_SHADERCROSS_USE_VULKAN ON "Use Vulkan/SPIR-V backend" ON)
-        add_compile_definitions(SDLGPU_SHADERCROSS_TARGET_VULKAN=1)
         set(SDLGPU_SHADERCROSS_TARGET "vulkan")
+        add_compile_definitions(SDLGPU_SHADERCROSS_TARGET_VULKAN=1)
     else()
         message(WARNING "Vulkan not found. Shader cross may need glslang alternative.")
     endif()
@@ -53,7 +46,7 @@ set(SOURCE_FILES
     src/gpuSketchpad.cpp
     src/gpuMesh.cpp
     src/gpuParticle.cpp
-    src/pipeline/shader_compiler.cpp  
+    src/pipeline/shadercross.cpp  
     src/gcCore.cpp
     src/OapiExtension.cpp
 )
@@ -62,13 +55,11 @@ set(SOURCE_FILES
 set(HEADER_FILES  
     include/gpuTypes.h
     include/gpuPipeline.h
-    include/gpuDevice.h
-    include/gpuShader.h
     include/gpuSurface.h
     include/gpuBackend.h  
+    include/gcCore.h
     src/pipeline/shaderCross.h
     src/pipeline/shader_compiler.h
-    gcCore.h
 )
 
 # HLSL shader source files - compiled at runtime via shadercross to GLSL/Metal/DXIL
@@ -93,10 +84,10 @@ set(ShaderFiles
     shaders/PBR.fs.hlsl
 )
 
-# Abstract interface headers (shared between D3D9 and SDLGPU clients)
+# ABI/API headers from D3D9Client (they're shared between clients)
 set(APIHeaders
-    ${INCLUDE_TARGET_DIR}/gcGUI.h  
-    ${INCLUDE_TARGET_DIR}/gcCoreAPI.h
+    ${CMAKE_SOURCE_DIR}/OVP/D3D9Client/gcGUI.h  
+    ${CMAKE_SOURCE_DIR}/OVP/D3D9Client/gcCore.h
 )
 
 source_group(APIHeaders FILES ${APIHeaders})
@@ -114,23 +105,10 @@ target_include_directories(SDLGPUClient PUBLIC
     ${ORBITER_SOURCE_SDK_INCLUDE_DIR}
     ${SRC_DIR}/include
     ${SDL3_INCLUDE_DIRS}
+    ${ORBITER_SOURCE_DIR}/Src/Orbiter/include
 )
-
-# Runtime shader compilation setup using SDL3_shadercross:
-# Each HLSL shader file gets compiled to native bytecode at runtime.
-# We generate a helper that loads shaders and compiles them on first use.
-set(COMPILER_GENERATED "${CMAKE_CURRENT_BINARY_DIR}/generated_shaders.cpp")
-add_custom_command(
-    OUTPUT ${COMPILER_GENERATED}
-    DEPENDS ${ShaderFiles} src/pipeline/shader_compiler.h
-    COMMENT "Generating compiled shader sources via SDL_shadercross..."
-)
-
-# Dependencies on core targets  
-add_dependencies(SDLGPUClient D3D9Client_Interface Orbitersdk Orbiter)
 
 # Link to libraries - orbitersdk provides the oapi::GraphicsClient interface
-# orbiterlib provides core simulation functions
 target_link_libraries(SDLGPUClient PRIVATE
     SDL3::SDL3
     SDL3_shadercross  
