@@ -588,6 +588,8 @@ typedef void* HTREEITEM;
 typedef long long LONGLONG;
 
 typedef long LONG_PTR;
+typedef size_t SIZE_T;
+typedef void* FARPROC;
 #define ATTACH_PARENT_PROCESS 0xFFFFFFFF
 
 
@@ -599,4 +601,29 @@ HWND WINAPI HtmlHelpA(HWND hwndCaller, LPCSTR pszFile, UINT uCommand, DWORD_PTR 
 #define HH_DISPLAY_TOPIC 0x0000
 
 
+
+// Win32 API stubs
+BOOL GetCursorPos(POINT* p) { *p = {0,0}; return TRUE; }
+BOOL ScreenToClient(HWND, POINT*) { return TRUE; }
+BOOL SetCursorPos(int, int) { return TRUE; }
+HWND GetDesktopWindow() { return 0; }
+void AllocConsole() {}
+void AttachConsole(DWORD) {}
+void sprintf_s(char* d, size_t, const char* f, ...) {}
+HWND GetConsoleWindow() { return 0; }
+void SetConsoleTitle(const char*) {}
+void GetSystemMenu(HWND, BOOL) {}
+#define MF_BYCOMMAND 0x00000000L
+#define STD_OUTPUT_HANDLE ((HANDLE)-11)
+#define WAIT_TIMEOUT 258L
+DWORD WaitForSingleObject(HANDLE, DWORD) { return 0; }
+void CloseHandle(HANDLE) {}
+void ReleaseMutex(HANDLE) {}
+#define STD_INPUT_HANDLE ((HANDLE)-10)
+#define STD_ERROR_HANDLE ((HANDLE)-12)
+SIZE_T lstrlenA(LPCSTR s) { return strlen(s); }
+#define lstrlen lstrlenA
+void strcpy_s(char* d, size_t, const char* s) { strcpy(d,s); }
+#define D3DVAL(x) ((float)(x))
+FARPROC GetProcAddress(HMODULE, const char*) { return 0; }
 #endif // PLATFORM_SDL_H
