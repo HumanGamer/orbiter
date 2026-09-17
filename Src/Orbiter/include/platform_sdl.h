@@ -98,7 +98,7 @@ typedef struct { float r, g, b, a; } D3DCOLOR;
 #endif
 #define D3DRGBA(r,g,b,a) ((D3DCOLOR){(r),(g),(b),(a)})
 #define D3DRGB(r,g,b) D3DRGBA((r),(g),(b),1.0f)
-typedef struct { float r, g, b; } D3DCOLORVALUE;
+typedef struct { float r, g, b, a; } D3DCOLORVALUE;
 typedef struct _POINT { LONG x; LONG y; } POINT;
 typedef struct _RECT { LONG left; LONG top; LONG right; LONG bottom; } RECT;
 typedef struct { HWND hwndFrom; UINT idFrom; UINT code; } NMHDR;
