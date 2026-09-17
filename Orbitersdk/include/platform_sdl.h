@@ -625,4 +625,16 @@ SIZE_T lstrlenA(LPCSTR s) { return strlen(s); }
 void strcpy_s(char* d, size_t, const char* s) { strcpy(d,s); }
 #define D3DVAL(x) ((float)(x))
 FARPROC GetProcAddress(HMODULE, const char*) { return 0; }
+HANDLE GetStdHandle(DWORD) { return 0; }
+BOOL DeleteMenu(HMENU, UINT, UINT) { return TRUE; }
+HANDLE CreateThread(LPSECURITY_ATTRIBUTES, SIZE_T, LPTHREAD_START_ROUTINE, LPVOID, DWORD, LPDWORD) { return 0; }
+BOOL SetConsoleTextAttribute(HANDLE, WORD) { return TRUE; }
+#define MAKEINTRESOURCE(x) ((LPSTR)((ULONG_PTR)((WORD)(x))))
+#define ENABLE_LINE_INPUT 0x0002
+#define ENABLE_ECHO_INPUT 0x0004
+#define ENABLE_PROCESSED_INPUT 0x0001
+#define FOREGROUND_RED 0x0004
+#define FOREGROUND_GREEN 0x0002
+#define FOREGROUND_BLUE 0x0001
+#define FOREGROUND_INTENSITY 0x0008
 #endif // PLATFORM_SDL_H
