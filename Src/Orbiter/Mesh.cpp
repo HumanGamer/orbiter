@@ -798,9 +798,9 @@ const char* Mesh::GetName() const
 void Mesh::SetName(const char* n)
 {
 	if (n) {
-		int len = lstrlen(n) + 1;
+		int len = strlen(n) + 1;
 		name = new char[len];
-		strcpy_s(name, len, n);
+		strcpy(name, len, n);
 	}
 }
 
@@ -1184,11 +1184,11 @@ void CreateSpherePatch (Mesh &mesh, int nlng, int nlat, int ilat, int res, int b
 		for (j = 0; j <= nseg; j++) {
 			lng = (nseg ? minlng + (maxlng-minlng) * (double)j/(double)nseg : 0.0);
 			slng = sin(lng), clng = cos(lng);
-			Vtx[n].x = Vtx[n].nx = D3DVAL(clat*clng);
-			Vtx[n].y = Vtx[n].ny = D3DVAL(slat);
-			Vtx[n].z = Vtx[n].nz = D3DVAL(clat*slng);
-			Vtx[n].tu = D3DVAL(nseg ? (c1*j)/nseg+c2 : 0.5); // overlap to avoid seams
-			Vtx[n].tv = D3DVAL((c1*(res-i))/res+c2);
+			Vtx[n].x = Vtx[n].nx = D3DVALUE(clat*clng);
+			Vtx[n].y = Vtx[n].ny = D3DVALUE(slat);
+			Vtx[n].z = Vtx[n].nz = D3DVALUE(clat*slng);
+			Vtx[n].tu = D3DVALUE(nseg ? (c1*j)/nseg+c2 : 0.5); // overlap to avoid seams
+			Vtx[n].tv = D3DVALUE((c1*(res-i))/res+c2);
 
 			if (!outside) {
 				Vtx[n].nx = - Vtx[n].nx;

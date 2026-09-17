@@ -47,4 +47,4 @@ public:
     
     static void DestroyPipeline(GPUPipeline* pipeline);
 };
-
+#endif

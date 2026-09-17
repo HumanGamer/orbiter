@@ -11,6 +11,7 @@
 #include "gpuBackend.h"
 
 #include <SDL3/SDL_vulkan.h>
+#include <SDL3_shadercross/SDL_shadercross.h>
 
 // Shader cross implementation 
 namespace GPUBackend {
@@ -119,4 +120,3 @@ const char* GetBackendName() {
 }
 
 } // namespace ShaderCross
-}
