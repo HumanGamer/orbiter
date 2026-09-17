@@ -573,6 +573,10 @@ typedef void* LPMSG;
 typedef void* HTREEITEM;
 typedef long long LONGLONG;
 
+typedef long LONG_PTR;
+#define ATTACH_PARENT_PROCESS 0xFFFFFFFF
+
+
 
 // HTMLHelp functions
 HWND WINAPI HtmlHelpA(HWND hwndCaller, LPCSTR pszFile, UINT uCommand, DWORD_PTR dwData);

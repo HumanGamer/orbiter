@@ -571,6 +571,7 @@ typedef short POINTS;
 typedef unsigned char UINT8;
 typedef void* LPMSG;
 typedef void* HTREEITEM;
+typedef long long LONGLONG;
 
 
 // HTMLHelp functions
