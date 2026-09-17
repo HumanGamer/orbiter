@@ -586,8 +586,6 @@ typedef unsigned char UINT8;
 typedef void* LPMSG;
 typedef void* HTREEITEM;
 typedef long long LONGLONG;
-
-typedef long LONG_PTR;
 typedef size_t SIZE_T;
 typedef void* FARPROC;
 #define ATTACH_PARENT_PROCESS 0xFFFFFFFF
