@@ -6,6 +6,7 @@
 // =======================================================================
 
 #include "Input.h"
+#define DI_OK S_OK
 #include "Log.h"
 #include "Orbiter.h"
 
@@ -40,7 +41,7 @@ HRESULT DInput::Create (HINSTANCE hInst)
 #endif
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
 	SDL_joy_init = true;
-	int n = SDL_GetNumGameControllers();
+	int n = SDL_GetNumGamepads();
 	LOGOUT("SDL game controller subsystem active. Found %d controller(s)", n);
 #endif
 	return S_OK;
@@ -56,7 +57,7 @@ void DInput::Destroy ()
 #endif
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
 	SDL_GameController* ctrl = (SDL_GameController*)sdl_joystick_handle;
-	if (ctrl) { SDL_CloseGameController(ctrl); sdl_joystick_handle = nullptr; }
+	if (ctrl) { SDL_CloseGamepad((SDL_Gamepad*)ctrl); sdl_joystick_handle = nullptr; }
 	SDL_joy_init = false;
 #endif
 }
@@ -127,7 +128,7 @@ bool DInput::CreateJoyDevice ()
 	Config *pcfg = orbiter->Cfg();
 	if (!pcfg->CfgJoystickPrm.Joy_idx) return false; // no joystick requested
 
-	SDL_GameController* ctrl = SDL_OpenGameController(pcfg->CfgJoystickPrm.Joy_idx - 1);
+	SDL_GameController* ctrl = SDL_OpenGamepad(pcfg->CfgJoystickPrm.Joy_idx - 1);
 	if (!ctrl) {
 		LOGOUT_ERR("Could not open SDL game controller at index %d", pcfg->CfgJoystickPrm.Joy_idx);
 		return false;
@@ -138,7 +139,7 @@ bool DInput::CreateJoyDevice ()
 	joyprop.bRudder = true;
 	joyprop.bThrottle = true;
 
-	LOGOUT("SDL game controller '%s' initialized (index %d)", SDL_GetGameControllerName(ctrl), pcfg->CfgJoystickPrm.Joy_idx);
+	LOGOUT("SDL game controller '%s' initialized (index %d)", SDL_GetGamepadName(ctrl), pcfg->CfgJoystickPrm.Joy_idx);
 	return true;
 #endif
 }
@@ -150,7 +151,7 @@ void DInput::DestroyDevices ()
 #endif
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
 	SDL_GameController* ctrl = (SDL_GameController*)sdl_joystick_handle;
-	if (ctrl) { SDL_CloseGameController(ctrl); sdl_joystick_handle = nullptr; }
+	if (ctrl) { SDL_CloseGamepad((SDL_Gamepad*)ctrl); sdl_joystick_handle = nullptr; }
 	SDL_joy_init = false;
 #endif
 }
@@ -188,7 +189,7 @@ bool DInput::PollJoystick (DIJOYSTATE2 *js)
 	SDL_GameController* ctrl = (SDL_GameController*)sdl_joystick_handle;
 	if (!ctrl) return false;
 
-	SDL_Joystick* joy = SDL_GetGameControllerJoystick(ctrl);
+	SDL_Joystick* joy = SDL_GetGamepadJoystick(ctrl);
 	if (!joy) return false;
 
 	// Read axes and map to DIJOYSTATE2 layout
@@ -346,7 +347,7 @@ HRESULT DInput::SetJoystickProperties ()
 	Config *pcfg = orbiter->Cfg();
 
 	// SDL deadzone handled internally via sensitivity mapping
-	SDL_Joystick* joy = SDL_GetGameControllerJoystick(ctrl);
+	SDL_Joystick* joy = SDL_GetGamepadJoystick(ctrl);
 	if (joy && pcfg->CfgJoystickPrm.Deadzone > 0) {
 		joyprop.bRudder = true;
 		joyprop.bThrottle = true;

@@ -10,7 +10,7 @@
 #include <SDL3/SDL.h>
 
 // SDL_GameController types (already defined in platform_sdl.h)
-typedef void* SDL_GameController;
+typedef SDL_Gamepad* SDL_GameController;
 typedef void* SDL_GameControllerButtonBind;
 
 #endif // ORBITER_BUILD_SDLGPUCLIENT

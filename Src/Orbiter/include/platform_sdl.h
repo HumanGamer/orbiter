@@ -84,9 +84,18 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD ddpfPixelFormat; DWORD dwSur
 typedef void* LPDIRECTDRAWSURFACE7;
 typedef struct { unsigned long Data1; unsigned short Data2; unsigned short Data3; unsigned char Data4[8]; } GUID;
 typedef struct { float x, y, z; } D3DVECTOR;
+#ifndef __D3DVERTEX_DEFINED__
 typedef struct { float x, y, z, rhw; DWORD color; float tu, tv; float nx, ny, nz; } D3DVERTEX;
+#define __D3DVERTEX_DEFINED__
+#endif
+#ifndef __D3DMATRIX_DEFINED__
 typedef struct { float _11, _12, _13, _14; float _21, _22, _23, _24; float _31, _32, _33, _34; float _41, _42, _43, _44; } D3DMATRIX;
+#define __D3DMATRIX_DEFINED__
+#endif
+#ifndef __D3DCOLOR_DEFINED__
 typedef struct { float r, g, b, a; } D3DCOLOR;
+#define __D3DCOLOR_DEFINED__
+#endif
 #define D3DRGBA(r,g,b,a) ((D3DCOLOR){(r),(g),(b),(a)})
 #define D3DRGB(r,g,b) D3DRGBA((r),(g),(b),1.0f)
 typedef struct { float r, g, b; } D3DCOLORVALUE;
@@ -525,10 +534,7 @@ static inline BOOL CreateWindowA(LPCSTR lpClassName, LPCSTR lpWindowName, DWORD 
 #define SC_MOUSEMOVE 0xF012
 #define SC_SEPARATOR 0xF00E
 #if defined(__x86_64__) || defined(__i386__)
-#define __SSE__ 1
 #include <emmintrin.h>
-#else
-#define __SSE__ 0
 #endif
 
 // DirectInput types
@@ -553,7 +559,14 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 
 #include <SDL3/SDL.h>
 
-typedef struct SDL_Gamepad SDL_GameController;
+typedef SDL_Gamepad* SDL_GameController;
+typedef void* sdl_joystick_handle;
+bool SDL_joy_init = false;
+int SDL_GetNumGamepads() { return 0; }
+typedef void* sdl_window_handle;
+typedef void* sdl_joystick_handle;
+extern sdl_joystick_handle sdl_joystick_handle;
+typedef float D3DVALUE;
 
 // Windows API types
 typedef float FLOAT;
@@ -561,7 +574,6 @@ typedef float FLOAT;
 typedef unsigned long long DWORDLONG;
 typedef struct { DWORD dwOfs; DWORD dwTimeStamp; DWORD dwData; DWORD dwFlags; } DIDEVICEOBJECTDATA;
 
-typedef void* FARPROC;
 #define WINAPI __attribute__((cdecl))
 typedef int (WINAPI *FARPROC_T)(void);
 #define CALLBACK __attribute__((stdcall))
