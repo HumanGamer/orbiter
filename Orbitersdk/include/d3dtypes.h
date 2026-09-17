@@ -56,15 +56,6 @@ public:
     virtual HRESULT STDMETHODCALLTYPE Clear(DWORD Count, const void* pRects, DWORD Flags, DWORD Color, float Z, DWORD Stencil) { return S_OK; }
     virtual HRESULT STDMETHODCALLTYPE BeginScene() { return S_OK; }
     virtual HRESULT STDMETHODCALLTYPE EndScene() { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE Present(const void* pSourceRect, const void* pDestRect, void* hDestWnd, const void* pRegion) { return S_OK; }
-};
-typedef IDirect3DVertexBuffer7* LPDIRECT3DVERTEXBUFFER7;
-typedef void*           LPDIRECTDRAWSURFACE7;
-class IDirect3DDevice7;
-typedef IDirect3DDevice7* LPDIRECT3DDEVICE7;
-typedef void*           LPDIRECT3D7;
-
-typedef struct {
     DWORD dwSize;
     DWORD dwFlags;
     DWORD dwCaps;

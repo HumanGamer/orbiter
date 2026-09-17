@@ -12,11 +12,8 @@
 
 #include <SDL3/SDL_vulkan.h>
 
-namespace GPPipeline {} // namespace GPUBackend {};
-
 // Shader cross implementation 
 namespace GPUBackend {
-namespace ShaderCross {
 
 static bool initialized_ = false;
 static int backend_count_ = 0;

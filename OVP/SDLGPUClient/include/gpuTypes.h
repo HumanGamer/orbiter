@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <SDL3/SDL_gpu.h>
+typedef SDL_GPUCommandBuffer SDL_GPUCmdBuffer;
 #include <SDL3_shadercross/SDL_shadercross.h>
 
 #include <cstdint>
@@ -19,7 +20,7 @@
 
 // Forward declarations for graphics APIs
 struct SURFACEDESC;
-class GPUBackend;
+class GpuBackend;
 class GPUPipeline;
 namespace oapi {
     class Sketchpad;

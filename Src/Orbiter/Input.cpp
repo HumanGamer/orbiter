@@ -21,7 +21,7 @@ DInput::DInput (Orbiter *pOrbiter)
 	diframe = NULL;
 	m_hWnd = NULL;
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
-	sdl_joystick_handle = nullptr;
+	
 	SDL_joy_init = false;
 #endif
 }
@@ -56,8 +56,8 @@ void DInput::Destroy ()
 	}
 #endif
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
-	SDL_GameController* ctrl = (SDL_GameController*)sdl_joystick_handle;
-	if (ctrl) { SDL_CloseGamepad((SDL_Gamepad*)ctrl); sdl_joystick_handle = nullptr; }
+	SDL_GameController* ctrl = nullptr;
+	if (ctrl) { SDL_CloseGamepad((SDL_Gamepad*)ctrl);  }
 	SDL_joy_init = false;
 #endif
 }
@@ -150,8 +150,8 @@ void DInput::DestroyDevices ()
 	diframe->DestroyDevices();
 #endif
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
-	SDL_GameController* ctrl = (SDL_GameController*)sdl_joystick_handle;
-	if (ctrl) { SDL_CloseGamepad((SDL_Gamepad*)ctrl); sdl_joystick_handle = nullptr; }
+	SDL_GameController* ctrl = nullptr;
+	if (ctrl) { SDL_CloseGamepad((SDL_Gamepad*)ctrl);  }
 	SDL_joy_init = false;
 #endif
 }
@@ -186,7 +186,7 @@ void DInput::OptionChanged(DWORD cat, DWORD item)
 bool DInput::PollJoystick (DIJOYSTATE2 *js)
 {
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
-	SDL_GameController* ctrl = (SDL_GameController*)sdl_joystick_handle;
+	SDL_GameController* ctrl = nullptr;
 	if (!ctrl) return false;
 
 	SDL_Joystick* joy = SDL_GetGamepadJoystick(ctrl);
@@ -341,7 +341,7 @@ HRESULT DInput::SetJoystickProperties ()
 	return DI_OK;
 #endif
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
-	SDL_GameController* ctrl = (SDL_GameController*)sdl_joystick_handle;
+	SDL_GameController* ctrl = nullptr;
 	if (!ctrl) return DI_OK;
 
 	Config *pcfg = orbiter->Cfg();

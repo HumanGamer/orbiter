@@ -565,7 +565,6 @@ bool SDL_joy_init = false;
 int SDL_GetNumGamepads() { return 0; }
 typedef void* sdl_window_handle;
 typedef void* sdl_joystick_handle;
-extern sdl_joystick_handle sdl_joystick_handle;
 typedef float D3DVALUE;
 
 // Windows API types

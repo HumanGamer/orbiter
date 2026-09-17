@@ -11,7 +11,7 @@
 
 #include "../include/gpuTypes.h"
 #include "../include/gpuSurface.h"
-#include "../src/gcCore.h"
+#include "../include/gcCore.h"
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_gpu.h>
 
