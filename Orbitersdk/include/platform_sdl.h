@@ -40,6 +40,7 @@ typedef wchar_t* LPWSTR;
 typedef const wchar_t* LPCWSTR;
 typedef unsigned short WORD;
 typedef long LONG;
+typedef long LONG_PTR;
 typedef int INT;
 typedef uintptr_t UINT_PTR;
 typedef uintptr_t DWORD_PTR;
