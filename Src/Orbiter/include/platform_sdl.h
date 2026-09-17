@@ -564,6 +564,9 @@ typedef struct { DWORD dwOfs; DWORD dwTimeStamp; DWORD dwData; DWORD dwFlags; } 
 typedef void* FARPROC;
 #define WINAPI __attribute__((cdecl))
 typedef int (WINAPI *FARPROC_T)(void);
+#define CALLBACK __attribute__((stdcall))
+#define LPNMHDR const struct tagNMHDR*
+typedef short POINTS;
 
 // HTMLHelp functions
 HWND WINAPI HtmlHelpA(HWND hwndCaller, LPCSTR pszFile, UINT uCommand, DWORD_PTR dwData);

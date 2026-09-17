@@ -557,6 +557,10 @@ typedef struct SDL_Gamepad SDL_GameController;
 
 // Windows API types
 typedef float FLOAT;
+
+typedef unsigned long long DWORDLONG;
+typedef struct { DWORD dwOfs; DWORD dwTimeStamp; DWORD dwData; DWORD dwFlags; } DIDEVICEOBJECTDATA;
+
 typedef void* FARPROC;
 #define WINAPI __attribute__((cdecl))
 typedef int (WINAPI *FARPROC_T)(void);
