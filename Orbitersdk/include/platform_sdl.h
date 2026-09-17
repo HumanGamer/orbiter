@@ -44,6 +44,10 @@ typedef int INT;
 typedef uintptr_t UINT_PTR;
 typedef uintptr_t DWORD_PTR;
 typedef const char* LPCTSTR;
+typedef const char* LPCSTR;
+typedef char* LPSTR;
+typedef const wchar_t* LPCWSTR;
+typedef wchar_t* LPWSTR;
 typedef int16_t INT16;
 typedef uint16_t UINT16;
 typedef int32_t INT32;
@@ -531,10 +535,8 @@ static inline BOOL CreateWindowA(LPCSTR lpClassName, LPCSTR lpWindowName, DWORD 
 // DirectInput types
 typedef struct { LONG lX; LONG lY; LONG lZ; LONG lRx; LONG lRy; LONG lRz; LONG rglSlider[2]; DWORD rgdwButton[32]; DWORD rgbButtons[32]; LONG lVX; LONG lVY; LONG lVZ; LONG lVRx; LONG lVRy; LONG lVRz; LONG lVFRx; LONG lVFRy; LONG lVFRz; LONG lVFRa; LONG lVFRb; LONG lVFRc; LONG lAS; LONG lARS; DWORD rglAxis[16]; DWORD rgdwPOV[16]; DWORD rglVAxis[16]; DWORD rgVAS; DWORD rgdwVPOV[16]; DWORD rglVPOV[16]; } DIJOYSTATE2;
 typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; } DIDATAFORMAT;
-typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; } DIDEVICEINSTANCE;
 
 // SDL GameController renames (SDL3 API changes)
-#define SDL_GameController SDL_Gamepad
 #define SDL_GameControllerOpen SDL_OpenGamepad
 #define SDL_GameControllerClose SDL_CloseGamepad
 #define SDL_GameControllerGetAxis SDL_GamepadGetAxis
@@ -549,5 +551,7 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 #define SDL_GameControllerGetDeviceInstanceID SDL_GetGamepadDeviceInstanceID
 
 #include <SDL3/SDL.h>
+
+typedef struct SDL_Gamepad SDL_GameController;
 
 #endif // PLATFORM_SDL_H

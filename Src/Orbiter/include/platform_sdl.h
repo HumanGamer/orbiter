@@ -44,6 +44,10 @@ typedef int INT;
 typedef uintptr_t UINT_PTR;
 typedef uintptr_t DWORD_PTR;
 typedef const char* LPCTSTR;
+typedef const char* LPCSTR;
+typedef char* LPSTR;
+typedef const wchar_t* LPCWSTR;
+typedef wchar_t* LPWSTR;
 typedef int16_t INT16;
 typedef uint16_t UINT16;
 typedef int32_t INT32;
@@ -534,7 +538,6 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; } DIDEVICEINSTANCE;
 
 // SDL GameController renames (SDL3 API changes)
-#define SDL_GameController SDL_Gamepad
 #define SDL_GameControllerOpen SDL_OpenGamepad
 #define SDL_GameControllerClose SDL_CloseGamepad
 #define SDL_GameControllerGetAxis SDL_GamepadGetAxis
@@ -549,5 +552,7 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 #define SDL_GameControllerGetDeviceInstanceID SDL_GetGamepadDeviceInstanceID
 
 #include <SDL3/SDL.h>
+
+typedef struct SDL_Gamepad SDL_GameController;
 
 #endif // PLATFORM_SDL_H

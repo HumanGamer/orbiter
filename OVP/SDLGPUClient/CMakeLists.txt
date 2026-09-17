@@ -105,7 +105,7 @@ target_include_directories(SDLGPUClient PUBLIC
     ${ORBITER_SOURCE_SDK_INCLUDE_DIR}
     ${SRC_DIR}/include
     ${SDL3_INCLUDE_DIRS}
-    ${ORBITER_SOURCE_DIR}/Src/Orbiter/include
+    ${ORBITER_SOURCE_DIR}/include
 )
 
 # Link to libraries - orbitersdk provides the oapi::GraphicsClient interface
