@@ -43,6 +43,7 @@ public:
     virtual ~IDirect3DVertexBuffer7() {}
     virtual HRESULT Release() { return S_OK; }
 };
+
 #ifndef __IDIRECT3DDEVICE7_CLASS__
 #define __IDIRECT3DDEVICE7_CLASS__
 class IDirect3DDevice7 {
@@ -58,6 +59,10 @@ public:
     virtual HRESULT STDMETHODCALLTYPE Clear(DWORD Count, const void* pRects, DWORD Flags, DWORD Color, float Z, DWORD Stencil) { return S_OK; }
     virtual HRESULT STDMETHODCALLTYPE BeginScene() { return S_OK; }
     virtual HRESULT STDMETHODCALLTYPE EndScene() { return S_OK; }
+};
+#endif
+
+typedef struct {
     DWORD dwSize;
     DWORD dwFlags;
     DWORD dwCaps;
@@ -113,4 +118,3 @@ typedef struct {
 } D3DMATERIAL7, *LPD3DMATERIAL7;
 
 #endif // ORBITER_BUILD_SDLGPUCLIENT
-#endif
