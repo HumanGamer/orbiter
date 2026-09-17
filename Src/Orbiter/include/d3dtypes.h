@@ -19,6 +19,8 @@ typedef struct { float r, g, b, a; } D3DCOLOR, *LPD3DCOLOR;
 #endif
 
 #ifndef __D3DCOLORVALUE_DEFINED__
+typedef struct {
+    D3DVALUE r, g, b, a;
 } D3DCOLORVALUE, *LPD3DCOLORVALUE;
 #define __D3DCOLORVALUE_DEFINED__
 #endif
