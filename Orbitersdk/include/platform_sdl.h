@@ -558,7 +558,9 @@ typedef struct { LONG lX; LONG lY; LONG lZ; LONG lRx; LONG lRy; LONG lRz; LONG r
 typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; } DIDATAFORMAT;
 typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; } DIDEVICEINSTANCE;
 
-// SDL GameController renames (SDL3 API changes)
+#include <SDL3/SDL.h>
+
+// SDL GameController renames (SDL3 API changes) - placed after SDL3 include to override compat macros
 #define SDL_GetNumGameControllers() SDL_GetNumGamepads()
 #define SDL_GameControllerOpen SDL_OpenGamepad
 #define SDL_GameControllerClose SDL_CloseGamepad
@@ -573,8 +575,6 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 
 #define SDL_GetGameControllerInstanceID SDL_GetGamepadInstanceID
 #define SDL_GameControllerGetDeviceInstanceID SDL_GetGamepadDeviceInstanceID
-
-#include <SDL3/SDL.h>
 
 typedef struct SDL_Joystick SDL_Joystick;
 typedef struct { int X; int Y; } COORD;
@@ -633,7 +633,7 @@ BOOL AttachConsole(DWORD) {}
 void sprintf_s(char* d, size_t, const char* f, ...) {}
 HWND GetConsoleWindow() { return 0; }
 void SetConsoleTitle(const char*) {}
-void GetSystemMenu(HWND, BOOL) {}
+HMENU GetSystemMenu(HWND, BOOL) { return nullptr; }
 #define MF_BYCOMMAND 0x00000000L
 #define STD_OUTPUT_HANDLE ((HANDLE)-11)
 #define WAIT_TIMEOUT 258L
@@ -651,6 +651,11 @@ HANDLE GetStdHandle(DWORD) { return 0; }
 BOOL DeleteMenu(HMENU, UINT, UINT) { return TRUE; }
 HANDLE CreateThread(LPSECURITY_ATTRIBUTES, SIZE_T, LPTHREAD_START_ROUTINE, LPVOID, DWORD, LPDWORD) { return 0; }
 BOOL SetConsoleTextAttribute(HANDLE, WORD) { return TRUE; }
+#define CreateMutex CreateMutexA
+#define CreateDialogA(hInst, lpTemplateName, hWndParent, lpDialogFunc) CreateDialogParamA(hInst, lpTemplateName, hWndParent, lpDialogFunc, 0)
+#define CreateDialog CreateDialogA
+#define ReadConsole ReadConsoleA
+#define WriteConsole WriteConsoleA
 #define MAKEINTRESOURCE(x) ((LPSTR)((ULONG_PTR)((WORD)(x))))
 #define ENABLE_LINE_INPUT 0x0002
 #define ENABLE_ECHO_INPUT 0x0004

@@ -59,6 +59,7 @@ typedef struct {
 	WORD      Flags;
 	DWORD     TexIdxEx[MAXTEX];
 	float     TexMixEx[MAXTEX];
+	typedef void* LPDIRECT3DVERTEXBUFFER7;
 	LPDIRECT3DVERTEXBUFFER7 VtxBuf;
 } GroupSpec;
 

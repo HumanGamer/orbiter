@@ -15,7 +15,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "Config.h"
-BOOL GetWindowRect(HWND, RECT*) { return TRUE; }
 #include "Astro.h"
 #include "Log.h"
 #include "VectorMap.h"
