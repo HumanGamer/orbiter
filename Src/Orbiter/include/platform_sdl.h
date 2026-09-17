@@ -667,11 +667,9 @@ BOOL ReadConsoleA(HANDLE, void*, DWORD, DWORD*, void*) { return FALSE; }
 BOOL WriteConsoleA(HANDLE, const void*, DWORD, DWORD*, void*) { return TRUE; }
 BOOL GetConsoleScreenBufferInfo(HANDLE, void*) { return TRUE; }
 BOOL SetConsoleCursorPosition(HANDLE, COORD) { return TRUE; }
-BOOL SetConsoleTextAttribute(HANDLE, WORD) { return TRUE; }
 BOOL SetConsoleTitleA(const char*) { return TRUE; }
 HANDLE CreateMutexA(LPSECURITY_ATTRIBUTES, BOOL, LPCSTR) { return (HANDLE)1; }
 HWND CreateDialogParamA(HINSTANCE, LPCSTR, HWND, void*, LPARAM) { return nullptr; }
-HWND CreateWindowExA(DWORD, LPCSTR, LPCSTR, DWORD, int, int, int, int, HWND, HMENU, HINSTANCE, LPVOID) { return nullptr; }
 BOOL UpdateWindow(HWND) { return TRUE; }
 BOOL KillTimer(HWND, UINT_PTR) { return TRUE; }
 BOOL TerminateThread(HANDLE, DWORD) { return FALSE; }
@@ -689,9 +687,6 @@ LONG_PTR SetWindowLongPtrA(HWND, int, LONG_PTR) { return 0; }
 BOOL IsWindow(HWND) { return FALSE; }
 UINT_PTR SetTimer(HWND, UINT_PTR, UINT, void*) { return 1; }
 HMENU GetMenu(HWND) { return nullptr; }
-HINSTANCE GetModuleHandleA(LPCSTR) { return 0; }
-BOOL UnregisterClassA(LPCSTR, HINSTANCE) { return TRUE; }
-BOOL CreateWindowA(LPCSTR, LPCSTR, DWORD, int, int, int, int, HWND, HMENU, HINSTANCE, LPVOID) { return FALSE; }
 BOOL AdjustWindowRectEx(LPRECT, DWORD, BOOL, DWORD) { return TRUE; }
 LONG SetWindowLongA(HWND, int, LONG) { return 0; }
 HICON LoadIconA(HINSTANCE, LPCSTR) { return (HICON)1; }
@@ -712,9 +707,5 @@ BOOL GetWindowRect(HWND, RECT*) { return TRUE; }
 
 HINSTANCE LoadLibraryA(LPCSTR) { return (HINSTANCE)1; }
 BOOL FreeLibrary(HINSTANCE) { return TRUE; }
-BOOL GetCursorPos(POINT*) { return TRUE; }
-BOOL SetCursorPos(int, int) { return TRUE; }
-HINSTANCE GetModuleHandle(const char*) { return nullptr; }
 BOOL SetConsoleCtrlHandler(void*, BOOL) { return TRUE; }
-HWND GetConsoleWindow() { return nullptr; }
 #endif // PLATFORM_SDL_H
