@@ -16,7 +16,9 @@
 
 // Workaround: force D3DVERTEX to have nx/ny/nz members
 #ifdef ORBITER_BUILD_SDLGPUCLIENT
+#if defined(__x86_64__) || defined(__i386__)
 #include <math.h>
+#endif
 #include <stdio.h>
 #include "D3DMath.h"
 

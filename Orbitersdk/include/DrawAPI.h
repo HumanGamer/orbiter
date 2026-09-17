@@ -22,7 +22,9 @@
 #include "OrbiterAPI.h"
 #include <assert.h>
 #if defined(__x86_64__) || defined(__i386__)
+#if defined(__x86_64__) || defined(__i386__)
 #include <xmmintrin.h>
+#endif
 #endif
 
 #if defined(_MSC_VER) && (_MSC_VER < 1920 ) // Microsoft Visual Studio Version 2017 and lower

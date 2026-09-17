@@ -279,7 +279,6 @@ static inline WORD LOWORD(DWORD dw) { return (WORD)(dw & 0xffff); }
 static inline DWORD FormatMessageA(DWORD dwFlags, LPCVOID lpSource, DWORD dwMessageId, UINT dwLanguageId, LPSTR lpBuffer, DWORD nSize, va_list* Arguments) { (void)dwFlags; (void)lpSource; (void)dwMessageId; (void)dwLanguageId; (void)lpBuffer; (void)nSize; (void)Arguments; return 0; }
 static inline HRESULT IDirectDraw7_SetCooperativeLevel(LPDIRECTDRAW7 pDD, HWND hWnd, DWORD dwFlags) { return 0; }
 static inline HRESULT IDirectDraw7_CreateSurface(LPDIRECTDRAW7 pDD, DDSURFACEDESC2* pDDSDESC, LPDIRECTDRAWSURFACE7* ppDDS, LPVOID pUnkOuter) { return 0; }
-typedef struct { char dwDevType; DWORD dwFlags; GUID guidInstance; GUID guidProduct; WORD wProductID; WORD wVID; WORD wPID; char szInstanceName[256]; char szProductName[256]; } DIDEVICEINSTANCE;
 static inline BOOL CreateWindowA(LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) { return FALSE; }
 #define MB_OK 0x00000000L
 #define MB_YESNO 0x00000004L
@@ -538,6 +537,7 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; } DIDEVICEINSTANCE;
 
 // SDL GameController renames (SDL3 API changes)
+#define SDL_GetNumGameControllers() SDL_GetNumGamepads()
 #define SDL_GameControllerOpen SDL_OpenGamepad
 #define SDL_GameControllerClose SDL_CloseGamepad
 #define SDL_GameControllerGetAxis SDL_GamepadGetAxis
@@ -547,12 +547,25 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 #define SDL_GameControllerFromInstanceID SDL_GamepadFromInstanceID
 #define SDL_GameControllerEventState SDL_GamepadEventState
 #define SDL_IsGameController SDL_IsGamepad
-#define SDL_GetNumGameControllers SDL_GetNumGamepads
+
 #define SDL_GetGameControllerInstanceID SDL_GetGamepadInstanceID
 #define SDL_GameControllerGetDeviceInstanceID SDL_GetGamepadDeviceInstanceID
 
 #include <SDL3/SDL.h>
 
 typedef struct SDL_Gamepad SDL_GameController;
+
+// Windows API types
+typedef float FLOAT;
+typedef void* FARPROC;
+#define WINAPI __attribute__((cdecl))
+typedef int (WINAPI *FARPROC_T)(void);
+
+// HTMLHelp functions
+HWND WINAPI HtmlHelpA(HWND hwndCaller, LPCSTR pszFile, UINT uCommand, DWORD_PTR dwData);
+
+// HTMLHelp macros
+#define HH_DISPLAY_TOPIC 0x0000
+
 
 #endif // PLATFORM_SDL_H
