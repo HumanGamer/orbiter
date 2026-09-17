@@ -568,6 +568,11 @@ typedef int (WINAPI *FARPROC_T)(void);
 #define LPNMHDR const struct tagNMHDR*
 typedef short POINTS;
 
+typedef unsigned char UINT8;
+typedef void* LPMSG;
+typedef void* HTREEITEM;
+
+
 // HTMLHelp functions
 HWND WINAPI HtmlHelpA(HWND hwndCaller, LPCSTR pszFile, UINT uCommand, DWORD_PTR dwData);
 
