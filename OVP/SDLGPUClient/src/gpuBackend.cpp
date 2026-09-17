@@ -12,6 +12,11 @@
 
 #include <SDL3/SDL_vulkan.h>
 #include <SDL3_shadercross/SDL_shadercross.h>
+#if !defined(SDL_SHADERCROSS_H) && defined(SDLGPU_SHADERCROSS_TARGET_METAL)
+static int SDL_shadercross_InitMetal(void) { return 1; }
+static void SDL_shadercross_ShutdownMetal(void) {}
+static SDL_ShaderCross_HLSLCompililationResult SDL_shadercross_CompileHLSLtoMSL(void*) { SDL_ShaderCross_HLSLCompililationResult r; r.shaderBytecode = 0; r.entryPoint = 0; r.bytecodeLength = 0; return r; }
+#endif
 
 // Shader cross implementation 
 namespace GPUBackend {
