@@ -94,7 +94,6 @@ typedef UINT_PTR WPARAM;
 typedef LONG LPARAM;
 typedef LONG LRESULT;
 typedef void* LPDIRECT3D7;
-typedef void* LPDIRECT3DDEVICE7;
 typedef void* LPDIRECTDRAW7;
 typedef void* LPDIRECTINPUTDEVICE8A;
 typedef void* LPDIRECTINPUT8A;
@@ -114,8 +113,10 @@ typedef void* HFONT;
 typedef unsigned long COLORREF;
 typedef struct { int cbSize; DWORD fMask; int nMin; int nMax; int nPage; int nPos; int nTrackPos; } SCROLLINFO;
 typedef struct { DWORD dwSize; DWORD dwFlags; DWORD ddpfPixelFormat; DWORD dwSurfaceCaps; DWORD dwBackBufferCount; } DDSURFACEDESC2;
-typedef void* LPDIRECTDRAWSURFACE7;
+typedef DDSURFACEDESC2* LPDDSURFACEDESC2;
 typedef struct { unsigned long Data1; unsigned short Data2; unsigned short Data3; unsigned char Data4[8]; } GUID;
+typedef struct { unsigned long dwSize; unsigned long dwFlags; unsigned long dwYOffsetToBlueMask; unsigned long dwYOffsetToGreenMask; unsigned long dwYOffsetToRedMask; } DDCOLORKEY;
+typedef DDCOLORKEY* LPDDCOLORKEY;
 typedef struct { float x, y, z; } D3DVECTOR;
 #ifndef __D3DVERTEX_DEFINED__
 typedef struct { float x, y, z, rhw; DWORD color; float tu, tv; float nx, ny, nz; } D3DVERTEX;
@@ -152,6 +153,7 @@ typedef struct _WNDCLASS { UINT style; LRESULT (*lpfnWndProc)(HWND, UINT, WPARAM
 #define NULL nullptr
 #define MAX_PATH 260
 #define ZeroMemory(Destination,Length) memset((Destination),0,(Length))
+#define _strdup strdup
 #define _stricmp strcasecmp
 #define _strnicmp strncasecmp
 #define stricmp strcasecmp
@@ -187,8 +189,8 @@ typedef struct {
     double retval;
 } _exception;
 
-// PPROCESS_MEMORY_COUNTERS
-typedef void* PPROCESS_MEMORY_COUNTERS;
+typedef struct { DWORD cb; DWORD Generation; DWORD PageFaultCount; size_t WorkingSetSize; size_t QuotaPeakPagedPoolUsage; size_t QuotaPagedPoolUsage; size_t QuotaPeakNonPagedPoolUsage; size_t QuotaNonPagedPoolUsage; size_t PagefileUsage; size_t PeakPagefileUsage; size_t PeakWorkingSetSize; } PROCESS_MEMORY_COUNTERS;
+typedef PROCESS_MEMORY_COUNTERS* PPROCESS_MEMORY_COUNTERS;
 typedef void* HANDLE;
 typedef INT_PTR (*DLGPROC)(HWND, UINT, WPARAM, LPARAM);
 typedef long LPSIZE;
@@ -213,8 +215,6 @@ static inline HRESULT FAILED(HRESULT hr) { return HRESULT_FAILED(hr); }
 #define MAKEINTRESOURCEA(i) ((LPCSTR)((uintptr_t)((WORD)(i))))
 #define TA_CENTER 0x0001
 #define TA_RIGHT 0x0002
-#define L(x) x
-#define L(x) x
 #define LR_CREATEDIBSECTION 0x00000200
 #define LR_LOADFROMFILE 0x00000010
 #define FORMAT_MESSAGE_FROM_SYSTEM 0x00001000
@@ -299,6 +299,166 @@ static inline HRESULT FAILED(HRESULT hr) { return HRESULT_FAILED(hr); }
 #define DDERR_NODRIVERSUPPORT 0x8876007D
 #define DDERR_DEVICEDOESNTOWNSURFACE 0x8876007E
 #define DDERR_NOTINITIALIZED 0x8876007F
+#define DDERR_ALREADYLOCKED 0x88760080
+#define DDERR_DEPTHMASKCLIPPED 0x88760081
+#define DDERR_Locked 0x88760082
+#define DDERR_NOFOCUS 0x88760083
+#define DDERR_ALREADYACQUIRED 0x88760084
+#define DDERR_NOTACQUIRED 0x88760085
+#define DDERR_INVALIDDIRECTDRAWGUID 0x88760086
+#define DDERR_PRIMARYSURFACEALREADYEXISTS 0x88760087
+#define DDERR_NOEMULATION 0x88760088
+#define DDERR_REGIONTOOSMALL 0x88760089
+#define DDERR_CLIPPERISUSINGHWND 0x8876008A
+#define DDERR_NOCLIPPERATTACHED 0x8876008B
+#define DDERR_NOHWND 0x8876008C
+#define DDERR_HWNDSUBCLASSED 0x8876008D
+#define DDERR_HWNDALREADYSET 0x8876008E
+#define DDERR_NOPALETTEATTACHED 0x8876008F
+#define DDERR_NOPALETTEHW 0x88760090
+#define DDERR_BLTFASTCANTCLIP 0x88760091
+#define DDERR_NOBLTHW 0x88760092
+#define DDERR_NOOVERLAYDEST 0x88760093
+#define DDERR_INVALIDPOSITION 0x88760094
+#define DDERR_NOTAOVERLAYSURFACE 0x88760095
+#define DDERR_EXCLUSIVEMODEALREADYSET 0x88760096
+#define DDERR_NOTFLIPPABLE 0x88760097
+#define DDERR_CANTDUPLICATE 0x88760098
+#define DDERR_NOTLOCKED 0x88760099
+#define DDERR_CANTCREATEDC 0x8876009A
+#define DDERR_NODC 0x8876009B
+#define DDERR_WRONGMODE 0x8876009C
+#define DDERR_IMPLICITLYCREATED 0x8876009D
+#define DDERR_NOTPALETTIZED 0x8876009E
+#define DDERR_UNSUPPORTEDMODE 0x8876009F
+#define DDERR_NOMIPMAPHW 0x887600A0
+#define DDERR_INVALIDSURFACETYPE 0x887600A1
+#define DDERR_NOOPTIMIZEHW 0x887600A2
+#define DDERR_NOTLOADED 0x887600A3
+#define DDERR_NOFOCUSWINDOW 0x887600A4
+#define DDERR_NOTONMIPMAPSUBLEVEL 0x887600A5
+#define DDERR_DCALREADYCREATED 0x887600A6
+#define DDERR_NONONLOCALVIDMEM 0x887600A7
+#define DDERR_CANTPAGELOCK 0x887600A8
+#define DDERR_CANTPAGEUNLOCK 0x887600A9
+#define DDERR_NOTPAGELOCKED 0x887600AA
+#define DDERR_MOREDATA 0x887600AB
+#define DDERR_EXPIRED 0x887600AC
+#define DDERR_TESTFINISHED 0x887600AD
+#define DDERR_NEWMODE 0x887600AE
+#define DDERR_D3DNOTINITIALIZED 0x887600AF
+#define DDERR_D3DINVALIDOBJECT 0x887600B0
+#define DDERR_NO3D 0x887600B1
+#define DDERR_WASSTILLDRAWING 0x887600B2
+#define DDERR_DDSCAPSCOMPLEXREQUIRED 0x887600B3
+#define DDERR_XALIGN 0x887600B4
+#define DDERR_INVALIDDIRECTDRAWGUID 0x887600B5
+#define DDERR_DIRECTDRAWALREADYCREATED 0x887600B6
+#define DDERR_NODIRECTDRAWHW 0x887600B7
+#define DDERR_PRIMARYSURFACEALREADYEXISTS 0x887600B8
+#define DDERR_NOEMULATION 0x887600B9
+#define DDERR_REGIONTOOSMALL 0x887600BA
+#define DDERR_CLIPPERISUSINGHWND 0x887600BB
+#define DDERR_NOCLIPPERATTACHED 0x887600BC
+#define DDERR_NOHWND 0x887600BD
+#define DDERR_HWNDSUBCLASSED 0x887600BE
+#define DDERR_HWNDALREADYSET 0x887600BF
+#define DDERR_NOPALETTEATTACHED 0x887600C0
+#define DDERR_NOPALETTEHW 0x887600C1
+#define DDERR_BLTFASTCANTCLIP 0x887600C2
+#define DDERR_NOBLTHW 0x887600C3
+#define DDERR_NOOVERLAYDEST 0x887600C4
+#define DDERR_INVALIDPOSITION 0x887600C5
+#define DDERR_NOTAOVERLAYSURFACE 0x887600C6
+#define DDERR_EXCLUSIVEMODEALREADYSET 0x887600C7
+#define DDERR_NOTFLIPPABLE 0x887600C8
+#define DDERR_CANTDUPLICATE 0x887600C9
+#define DDERR_NOTLOCKED 0x887600CA
+#define DDERR_CANTCREATEDC 0x887600CB
+#define DDERR_NODC 0x887600CC
+#define DDERR_WRONGMODE 0x887600CD
+#define DDERR_IMPLICITLYCREATED 0x887600CE
+#define DDERR_NOTPALETTIZED 0x887600CF
+#define DDERR_UNSUPPORTEDMODE 0x887600D0
+#define DDERR_NOMIPMAPHW 0x887600D1
+#define DDERR_INVALIDSURFACETYPE 0x887600D2
+#define DDERR_NOOPTIMIZEHW 0x887600D3
+#define DDERR_NOTLOADED 0x887600D4
+#define DDERR_NOFOCUSWINDOW 0x887600D5
+#define DDERR_NOTONMIPMAPSUBLEVEL 0x887600D6
+#define DDERR_DCALREADYCREATED 0x887600D7
+#define DDERR_NONONLOCALVIDMEM 0x887600D8
+#define DDERR_CANTPAGELOCK 0x887600D9
+#define DDERR_CANTPAGEUNLOCK 0x887600DA
+#define DDERR_NOTPAGELOCKED 0x887600DB
+#define DDERR_ALREADYLOCKED 0x887600DC
+#define DDERR_DEPTHMASKCLIPPED 0x887600DD
+#define DDERR_ALREADYACQUIRED 0x887600DE
+#define DDERR_NOTACQUIRED 0x887600DF
+#define DDERR_CANSTILLDATACH 0x887600E0
+#define DDERR_DEVICEDOESNTOWNSURFACE 0x887600E1
+#define DDERR_ALREADYINITIALIZED 0x887600E2
+#define DDERR_CANNOTATTACHSURFACE 0x887600E3
+#define DDERR_CANNOTDETACHSURFACE 0x887600E4
+#define DDERR_CURRENTLYNOTAVAIL 0x887600E5
+#define DDERR_EXCEPTION 0x887600E6
+#define DDERR_GENERIC 0x80000000L
+#define DDERR_HEIGHTALIGN 0x887600E7
+#define DDERR_INCOMPATIBLEPRIMARY 0x887600E8
+#define DDERR_INVALIDCAPS 0x887600E9
+#define DDERR_INVALIDCLIPLIST 0x887600EA
+#define DDERR_INVALIDMODE 0x887600EB
+#define DDERR_INVALIDOBJECT 0x887600EC
+#define DDERR_INVALIDPARAMS 0x80070057
+#define DDERR_INVALIDRECT 0x887600ED
+#define DDERR_LOCKEDSURFACES 0x887600EE
+#define DDERR_NO3D 0x887600EF
+#define DDERR_NOALPHAHW 0x887600F0
+#define DDERR_NOSTEREOHARDWARE 0x887600F1
+#define DDERR_NOSURFACELEFT 0x887600F2
+#define DDERR_NOCLIPLIST 0x887600F3
+#define DDERR_NOCOLORCONVHW 0x887600F4
+#define DDERR_NOCOOPERATIVELEVELSET 0x887600F5
+#define DDERR_NOCOLORKEY 0x887600F6
+#define DDERR_NOCOLORKEYHW 0x887600F7
+#define DDERR_DIRECTDRAWALREADYCREATED 0x887600F8
+#define DDERR_NOEMULATION 0x887600F9
+#define DDERR_REGIONTOOSMALL 0x887600FA
+#define DDERR_TEXTUREUNFILTERABLE 0x887600FB
+#define DDERR_D3DNOTINITIALIZED 0x887600FC
+#define DDERR_D3DINVALIDOBJECT 0x887600FD
+#define DDERR_VIDEONOTACTIVE 0x887600FE
+#define DDERR_NOMONITORINFORMATION 0x887600FF
+#define DDERR_NODRIVERSUPPORT 0x88760100
+#define DDERR_DEVICEDOESNTOWNSURFACE 0x88760101
+#define DDERR_UNKNOWN 0x88760102
+#define DDERR_NOTFOUND 0x88760103
+#define DDERR_THREADIDISMATCH 0x88760104
+#define DDERR_TEXTUREADDRESSNOTAVAILABLE 0x88760105
+#define DDERR_INVALIDPIXELFORMAT 0x88760106
+#define DDERR_NODIRECTDRAWSUPPORT 0x88760107
+#define DDERR_NOEXCLUSIVEMODE 0x88760108
+#define DDERR_NOFLIPHW 0x88760109
+#define DDERR_NOGDI 0x8876010A
+#define DDERR_NOMIRRORHW 0x8876010B
+#define DDERR_NOOVERLAYHW 0x8876010C
+#define DDERR_OVERLAPPINGRECTS 0x8876010D
+#define DDERR_NORASTEROPHW 0x8876010E
+#define DDERR_NOROTATIONHW 0x8876010F
+#define DDERR_NOSTRETCHHW 0x88760110
+#define DDERR_NOT4BITCOLOR 0x88760111
+#define DDERR_NOT4BITCOLORINDEX 0x88760112
+#define DDERR_NOT8BITCOLOR 0x88760113
+#define DDERR_NOTEXTUREHW 0x88760114
+#define DDERR_NOVSYNCHW 0x88760115
+#define DDERR_NOZBUFFERHW 0x88760116
+#define DDERR_NOZOVERLAYHW 0x88760117
+#define DDERR_NOT3D 0x88760118
+#define DDERR_NOSOUNDDRV 0x88760119
+#define DDERR_OUTOFCAPS 0x8876011A
+#define DDERR_OUTOFMEMORY 0x8007000E
+#define DDERR_ACCESSDENIED 0x80070005
+#define DDERR_ACCESSDENIEDBUFFER 0x8876011B
 #define DIERR_INVALIDPARAM 0x80070057
 #define DIERR_NOTINITIALIZED 0x80070001
 #define DIERR_OBJECTNOTFOUND 0x80070002
@@ -320,7 +480,7 @@ static inline DWORD GetModuleFileNameExA(HANDLE hProcess, HMODULE hModule, LPSTR
 typedef struct { LPVOID lpBaseOfDll; DWORD SizeOfImage; DWORD EntryPoint; } MODULEINFO;
 static inline DWORD GetFileVersionInfoSizeA(const char* lpFileName, DWORD* lplpBuffer) { return 0; }
 static inline BOOL GetFileVersionInfoA(const char* lpFileName, DWORD dwHandle, DWORD dwLen, LPVOID lpData) { return FALSE; }
-typedef struct { DWORD dwSignature; DWORD dwStrucVersion; WORD wMS; WORD wLS; WORD wReserved0; WORD wReserved1; DWORD dwSignature2; DWORD dwDateLo; DWORD dwDateHi; } VS_FIXEDFILEINFO;
+typedef struct { DWORD dwSignature; DWORD dwStrucVersion; DWORD dwFileVersionMS; DWORD dwFileVersionLS; DWORD dwProductVersionMS; DWORD dwProductVersionLS; DWORD dwFileFlagsMask; DWORD dwFileFlags; DWORD dwFileOS; DWORD dwFileType; DWORD dwFileSubtype; DWORD dwFileDateMS; DWORD dwFileDateLS; } VS_FIXEDFILEINFO;
 static inline BOOL VerQueryValueA(const LPVOID pBlock, LPCSTR lpSubBlock, LPVOID* lplpBuffer, UINT* puLen) { return FALSE; }
 static inline HRESULT SHGetFolderPathA(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPSTR pszPath) { (void)hwndOwner; (void)nFolder; (void)hToken; (void)dwFlags; (void)pszPath; return S_OK; }
 static inline DWORD GetTickCount() { return 0; }
@@ -347,7 +507,17 @@ static inline LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM 
 static inline BOOL RegisterClassA(const WNDCLASS* lpWndClass) { return TRUE; }
 static inline BOOL UnregisterClassA(LPCSTR lpClassName, HINSTANCE hInstance) { return TRUE; }
 static inline LRESULT DispatchMessageA(const MSG* lpMsg) { return 0; }
+#define DispatchMessage DispatchMessageA
 static inline BOOL TranslateMessageA(const MSG* lpMsg) { return TRUE; }
+#define TranslateMessage TranslateMessageA
+static inline HWND GetParent(HWND hWnd) { return nullptr; }
+static inline BOOL IsChild(HWND hWndParent, HWND hWnd) { return FALSE; }
+#define WM_NCLBUTTONDBLCLK 0x00A3
+static inline HANDLE CreateEventA(void* lpEventAttributes, BOOL bManualReset, BOOL bInitialState, LPCSTR lpName) { return (HANDLE)1; }
+static inline HANDLE CreateEventW(void* lpEventAttributes, BOOL bManualReset, BOOL bInitialState, LPCWSTR lpName) { return (HANDLE)1; }
+#define CreateEvent CreateEventA
+static inline BOOL PostThreadMessageA(DWORD dwThreadId, UINT Msg, WPARAM wParam, LPARAM lParam) { return FALSE; }
+#define PostThreadMessage PostThreadMessageA
 static inline int TranslateAcceleratorA(HWND hWnd, HACCEL hAccTable, MSG* lpMsg) { return 0; }
 static inline HWND GetDlgItem(HWND hDlg, int nIDDlgItem) { return nullptr; }
 static inline int GetDlgCtrlID(HWND hwnd) { return 0; }
@@ -360,6 +530,7 @@ static inline DWORD GetVersion() { return 0; }
 static inline WORD HIWORD(DWORD dw) { return (WORD)((dw >> 16) & 0xffff); }
 static inline WORD LOWORD(DWORD dw) { return (WORD)(dw & 0xffff); }
 static inline DWORD FormatMessageA(DWORD dwFlags, LPCVOID lpSource, DWORD dwMessageId, UINT dwLanguageId, LPSTR lpBuffer, DWORD nSize, va_list* Arguments) { (void)dwFlags; (void)lpSource; (void)dwMessageId; (void)dwLanguageId; (void)lpBuffer; (void)nSize; (void)Arguments; return 0; }
+typedef void* LPDIRECTDRAWSURFACE7;
 static inline HRESULT IDirectDraw7_SetCooperativeLevel(LPDIRECTDRAW7 pDD, HWND hWnd, DWORD dwFlags) { return 0; }
 static inline HRESULT IDirectDraw7_CreateSurface(LPDIRECTDRAW7 pDD, DDSURFACEDESC2* pDDSDESC, LPDIRECTDRAWSURFACE7* ppDDS, LPVOID pUnkOuter) { return 0; }
 static inline BOOL CreateWindowA(LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) { return FALSE; }
@@ -890,7 +1061,7 @@ static inline BOOL ClientToScreen(HWND, POINT*) { return TRUE; }
 static inline BOOL ClipCursor(const RECT*) { return TRUE; }
 static inline BOOL ReleaseCapture() { return TRUE; }
 #define DIERR_NOTACQUIRED (-2128964351)
-#define DIERR_INPUTLOST (-2128964351)
+#define DIERR_INPUTLOST (-2128964350)
 #define SUCCEEDED(x) ((HRESULT)(x) >= 0)
 #define DIK_LSHIFT 0xA0
 #define WM_ACTIVATE 0x0006
@@ -1044,4 +1215,53 @@ static inline int MultiByteToWideChar(UINT CodePage, UINT dwFlags, const char* l
 static inline HBITMAP LoadBitmapA(HINSTANCE, LPCSTR) { return (HBITMAP)1; }
 #define LoadBitmap LoadBitmapA
 #define COLORREF ULONG
+
+// DirectDraw types
+typedef struct { unsigned long cbSize; unsigned long dwFlags; unsigned long dwRGBBitCount; unsigned long dwRBitMask; unsigned long dwGBitMask; unsigned long dwBBitMask; unsigned long dwRGBAlphaBitMask; } DDPIXELFORMAT;
+typedef struct { unsigned short x; unsigned short y; } SIZEL;
+typedef SIZEL* PSIZEL;
+typedef struct { unsigned long cbSize; unsigned long dwFlags; unsigned long dwFillColor; unsigned long dwReserved1; unsigned long dwFillColorOpaque; } DDBLTFX;
+typedef DDBLTFX* LPDDBLTFX;
+
+// GDI bitmap type
+typedef struct { unsigned char bmType; unsigned char bmWidth; unsigned char bmHeight; unsigned char bmWidthEx; unsigned long bmHeightEx; unsigned long bmWidthBytes; unsigned short bmPlanes; unsigned short bmBitsPixel; void* bmBits; } BITMAP;
+
+// GDI GetObject stub
+static inline int GetObjectA(HGDIOBJ h, int c, void* d) { (void)h; (void)c; (void)d; return 0; }
+static inline int GetObjectW(HGDIOBJ h, int c, void* d) { (void)h; (void)c; (void)d; return 0; }
+#define GetObject GetObjectA
+
+typedef unsigned char* LPBYTE;
+
+// POINT type
+typedef POINT* LPPOINT;
+
+// GDI constants
+#define PS_SOLID 0
+#define NULL_BRUSH 5
+
+// GDI functions
+static inline HGDIOBJ CreatePen(int fnPenStyle, int cWidth, COLORREF crColor) { (void)fnPenStyle; (void)cWidth; (void)crColor; return (HGDIOBJ)1; }
+static inline BOOL TextOutA(HDC, int, int, LPCSTR, int) { return TRUE; }
+#define TextOut TextOutA
+static inline UINT SetTextAlign(HDC hDC, UINT fMode) { return 0; }
+static inline BOOL MoveToEx(HDC hDC, int X, int Y, LPPOINT lpPoint) { if(lpPoint) { lpPoint->x = 0; lpPoint->y = 0; } return TRUE; }
+static inline BOOL LineTo(HDC hDC, int X, int Y) { return TRUE; }
+
+// FormatMessage
+#define FormatMessage FormatMessageA
+static inline HANDLE GetCurrentProcess() { return (HANDLE)-1; }
+static inline BOOL GetProcessMemoryInfo(HANDLE, PPROCESS_MEMORY_COUNTERS pPMC, DWORD cb) { if(pPMC) { pPMC->WorkingSetSize = 0; pPMC->PeakWorkingSetSize = 0; } return TRUE; }
+static inline int _fseeki64(FILE* stream, long long offset, int whence) { return fseeko(stream, (off_t)offset, whence); }
+static inline HANDLE OpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId) { (void)dwDesiredAccess; (void)bInheritHandle; (void)dwProcessId; return (HANDLE)1; }
+static inline BOOL GetModuleInformation(HANDLE, HMODULE, void*, DWORD) { return TRUE; }
+#define GetFileVersionInfoSize GetFileVersionInfoSizeA
+#define GetFileVersionInfo GetFileVersionInfoA
+#define FORMAT_MESSAGE_ALLOCATE_BUFFER 0x00000100
+#define LANG_NEUTRAL 0x00
+#define SUBLANG_DEFAULT 0x01
+static inline DWORD timeGetTime() { return (DWORD)SDL_GetTicks(); }
+
+// GetModuleFileName
+#define GetModuleFileName GetModuleFileNameA
 #endif // PLATFORM_SDL_H

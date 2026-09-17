@@ -9,7 +9,17 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/madler/zlib.git
   GIT_TAG v1.2.11
 )
-FetchContent_MakeAvailable(zlib)
+
+# Patch to fix fdopen redefinition conflict with macOS system headers
+FetchContent_Populate(zlib)
+file(READ "${zlib_SOURCE_DIR}/zutil.h" ZUTIL_CONTENT)
+string(REPLACE "#        define fdopen(fd,mode) NULL /* No fdopen() */" "" ZUTIL_CONTENT "${ZUTIL_CONTENT}")
+string(REPLACE "#  define fdopen(fd,mode) NULL /* No fdopen() */" "" ZUTIL_CONTENT "${ZUTIL_CONTENT}")
+string(REPLACE "#    define fdopen(fd,mode) NULL /* No fdopen() */" "" ZUTIL_CONTENT "${ZUTIL_CONTENT}")
+file(WRITE "${zlib_SOURCE_DIR}/zutil.h" "${ZUTIL_CONTENT}")
+
+# Build zlib from the patched source
+add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
 target_include_directories(zlib INTERFACE ${zlib_SOURCE_DIR})
 target_include_directories(zlib INTERFACE ${zlib_BINARY_DIR})
 

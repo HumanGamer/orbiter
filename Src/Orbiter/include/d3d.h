@@ -11,7 +11,16 @@ class IDirect3DDevice7;
 
 // Direct3D types (stubs)
 typedef void*           LPDIRECT3D7;
-typedef void* LPDIRECT3DDEVICE7;
+
+class IDirect3DDevice7 {
+public:
+    HRESULT SetRenderState(DWORD State, DWORD Value) { return D3D_OK; }
+    HRESULT GetRenderState(DWORD State, DWORD* pValue) { if(pValue) *pValue = 0; return D3D_OK; }
+    HRESULT DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, DWORD FVF, const void* pVertexStreamZeroData, UINT VertexCount, const void* pIndexData) { return D3D_OK; }
+    HRESULT DrawIndexedPrimitive(D3DPRIMITIVETYPE PrimitiveType, const void* pVertexData, UINT VertexCount, const void* pIndexData, UINT IndexCount) { return D3D_OK; }
+    HRESULT SetTexture(DWORD Stage, void* pTexture) { (void)Stage; (void)pTexture; return D3D_OK; }
+};
+typedef IDirect3DDevice7* LPDIRECT3DDEVICE7;
 typedef void*           LPDIRECT3D8;
 typedef void*           LPDIRECT3DDEVICE8;
 typedef void*           LPDIRECT3DVERTEXBUFFER8;
@@ -59,3 +68,27 @@ typedef struct {
 #define D3DFVF_TEXCOORDSIZE2(idx)  (0 << (idx * 4))
 #define D3DFVF_TEXCOORDSIZE3(idx)  (1 << (idx * 4))
 #define D3DFVF_TEXCOORDSIZE4(idx)  (2 << (idx * 4))
+#define D3DFVF_VERTEX       (D3DFVF_XYZ | D3DFVF_RHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
+
+// Direct3D primitive types
+#define D3DPT_POINTLIST     0
+#define D3DPT_LINELIST      1
+#define D3DPT_LINESTRIP     2
+#define D3DPT_TRIANGLELIST  4
+#define D3DPT_TRIANGLESTRIP 5
+#define D3DPT_TRIANGLEFAN   6
+typedef DWORD D3DPRIMITIVETYPE;
+
+// Direct3D render states
+#define D3DRENDERSTATE_ALPHABLENDENABLE         30
+#define D3DRENDERSTATE_AMBIENT                  4
+#define D3DRENDERSTATE_SRCBLEND                 14
+#define D3DRENDERSTATE_DESTBLEND                15
+
+// Direct3D blend factors
+#define D3DBLEND_ZERO           1
+#define D3DBLEND_ONE            2
+#define D3DBLEND_SRCCOLOR       3
+#define D3DBLEND_INVSRCCOLOR    4
+#define D3DBLEND_SRCALPHA       5
+#define D3DBLEND_INVSRCALPHA    6

@@ -110,15 +110,14 @@ public:
     uint32_t GetVK(uint8_t vk_scan_code) const;
     
     /** Check if virtual key is currently down (after modifier translation) */
-    bool IsKeyDown(uint16_t vk_code) const { return state_.count(vk_code) > 0; }
+    bool IsKeyDown(uint16_t vk_code) const { return (key_down_mask_ & (1u << vk_code)) != 0; }
     
     /** Track VK code press/release (for WM_KEYDOWN/UP events) */
     void OnKeyDown(uint16_t vk);
     void OnKeyUp(uint16_t vk);
 
 private:
-    std::set<uint16_t> state_;
-    std::vector<int64_t> key_timestamps_; // Maps VK code → last-pressed timestamp
+    uint32_t key_down_mask_ = 0;
 };
 
 /** Track mouse state including cursor position, capture, and button states */
