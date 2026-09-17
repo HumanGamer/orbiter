@@ -44,11 +44,10 @@ public:
     virtual HRESULT Release() { return S_OK; }
 };
 #ifndef __IDIRECT3DDEVICE7_CLASS__
-#ifndef __IDIRECT3DDEVICE7_CLASS__
+#define __IDIRECT3DDEVICE7_CLASS__
 class IDirect3DDevice7 {
 public:
     virtual ~IDirect3DDevice7() {}
-#endif
     virtual HRESULT STDMETHODCALLTYPE SetRenderState(DWORD State, DWORD dwValue) { return S_OK; }
     virtual HRESULT STDMETHODCALLTYPE GetRenderState(DWORD State, DWORD *pValue) { if(pValue) *pValue = 0; return S_OK; }
     virtual HRESULT STDMETHODCALLTYPE SetTexture(DWORD Stage, void* pTexture) { return S_OK; }
