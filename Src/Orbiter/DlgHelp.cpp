@@ -26,7 +26,7 @@ void DlgHelp::OpenHelp(const HELPCONTEXT *hc)
 
 	buf[255] = '\0';
 
-	if(!HtmlHelp (hWnd, buf, HH_DISPLAY_TOPIC, NULL)) {
+	if(!HtmlHelp (hWnd, buf, HH_DISPLAY_TOPIC, 0)) {
 		oapiAddNotification(OAPINOTIF_ERROR, "Failed to open help", buf);
 	}
 }

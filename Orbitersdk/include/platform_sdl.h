@@ -3,8 +3,27 @@
 // Cross-platform compatibility layer for Win32 types on macOS/Linux
 #pragma once
 
+// Fix zlib compatibility issues on macOS
+#ifdef __APPLE__
+#undef fdopen
+#undef OS_CODE
+#endif
+
 #ifndef PLATFORM_SDL_H
 #define PLATFORM_SDL_H
+
+// Win32 API macros - defined early to ensure visibility
+#define CreateDialog CreateDialogA
+#define SetCurrentDirectory SetCurrentDirectoryA
+#define MessageBox MessageBoxA
+#define LoadLibrary LoadLibraryA
+#define LoadCursor LoadCursorA
+#define LoadIcon LoadIconA
+#define RegisterClass RegisterClassA
+#define GetClassInfo GetClassInfoA
+#define SetWindowText SetWindowTextA
+#define PeekMessage PeekMessageA
+#define GetMessage GetMessageA
 
 #ifndef __SSE__
 #define __SSE__ 0
@@ -24,6 +43,9 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/stat.h>
 typedef uint32_t DWORD;
 typedef uint8_t BYTE;
 typedef bool BOOL;
@@ -33,9 +55,13 @@ typedef void* HDC;
 typedef void* HMODULE;
 typedef void* HGDIOBJ;
 typedef void* LPVOID;
+typedef void* PVOID;
+typedef void* HKEY;
 typedef const void* LPCVOID;
 typedef char* LPSTR;
 typedef const char* LPCSTR;
+typedef char* LPTSTR;
+typedef wchar_t WCHAR;
 typedef wchar_t* LPWSTR;
 typedef const wchar_t* LPCWSTR;
 typedef unsigned short WORD;
@@ -46,6 +72,7 @@ typedef int INT;
 typedef uintptr_t UINT_PTR;
 typedef uintptr_t DWORD_PTR;
 typedef uintptr_t ULONG_PTR;
+typedef unsigned long ULONG;
 typedef int64_t LONG64;
 typedef int64_t LARGE_INTEGER;
 typedef const char* LPCTSTR;
@@ -62,6 +89,7 @@ typedef int64_t INT64;
 #define __int64 long long
 #endif
 typedef uint64_t UINT64;
+typedef int INT_PTR;
 typedef UINT_PTR WPARAM;
 typedef LONG LPARAM;
 typedef LONG LRESULT;
@@ -71,7 +99,6 @@ typedef void* LPDIRECTDRAW7;
 typedef void* LPDIRECTINPUTDEVICE8A;
 typedef void* LPDIRECTINPUT8A;
 typedef void* LPDIRECTINPUT8;
-typedef void* LPDIRECTINPUTDEVICE8;
 typedef void* HMENU;
 typedef void* HACCEL;
 typedef void* HINSTANCE;
@@ -110,7 +137,9 @@ typedef struct { float r, g, b, a; } D3DCOLORVALUE;
 #endif
 typedef struct _POINT { LONG x; LONG y; } POINT;
 typedef struct _RECT { LONG left; LONG top; LONG right; LONG bottom; } RECT;
-typedef struct { HWND hwndFrom; UINT idFrom; UINT code; } NMHDR;
+typedef struct { UINT CtlType; UINT CtlID; UINT itemID; UINT itemAction; UINT itemState; HWND hwndItem; HDC hDC; RECT rcItem; LPARAM itemData; } DRAWITEMSTRUCT;
+typedef DRAWITEMSTRUCT* LPDRAWITEMSTRUCT;
+typedef struct { HWND hwndFrom; UINT idFrom; UINT code; } NMHDR, *LPNMHDR, *LPCNMHDR;
 typedef struct { NMHDR hdr; int iDelta; POINT pt; UINT uKeyFlags; DWORD dwItemSpec; DWORD dwItemData; } NMUPDOWN;
 typedef RECT* LPRECT;
 typedef const RECT* LPCRECT;
@@ -125,8 +154,43 @@ typedef struct _WNDCLASS { UINT style; LRESULT (*lpfnWndProc)(HWND, UINT, WPARAM
 #define ZeroMemory(Destination,Length) memset((Destination),0,(Length))
 #define _stricmp strcasecmp
 #define _strnicmp strncasecmp
-typedef LRESULT (*DLGPROC)(HWND, UINT, WPARAM, LPARAM);
-typedef int INT_PTR;
+#define stricmp strcasecmp
+#define _tcsicmp strcasecmp
+#define _MAX_PATH 260
+
+// _snprintf -> vsnprintf
+#define _snprintf snprintf
+#define _snprintf_s(str, size, max, ...) snprintf(str, size, __VA_ARGS__)
+#define _vsnprintf vsnprintf
+
+// _putenv -> putenv
+#define _putenv putenv
+
+// _getcwd -> getcwd
+#define _getcwd getcwd
+
+// TCHAR compatibility
+typedef char TCHAR;
+#define _T(x) x
+#define TEXT(x) x
+
+// MB_ICONERROR
+#define MB_ICONERROR 0x00000030L
+
+// _exception struct (for _matherr)
+typedef struct {
+    int except_code;
+    const char* name;
+    double arg1;
+    double arg2;
+    double arg3;
+    double retval;
+} _exception;
+
+// PPROCESS_MEMORY_COUNTERS
+typedef void* PPROCESS_MEMORY_COUNTERS;
+typedef void* HANDLE;
+typedef INT_PTR (*DLGPROC)(HWND, UINT, WPARAM, LPARAM);
 typedef long LPSIZE;
 typedef void* CLSID;
 typedef void* IID;
@@ -283,9 +347,7 @@ static inline LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM 
 static inline BOOL RegisterClassA(const WNDCLASS* lpWndClass) { return TRUE; }
 static inline BOOL UnregisterClassA(LPCSTR lpClassName, HINSTANCE hInstance) { return TRUE; }
 static inline LRESULT DispatchMessageA(const MSG* lpMsg) { return 0; }
-static inline BOOL GetMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax) { return TRUE; }
 static inline BOOL TranslateMessageA(const MSG* lpMsg) { return TRUE; }
-static inline BOOL PeekMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg) { return FALSE; }
 static inline int TranslateAcceleratorA(HWND hWnd, HACCEL hAccTable, MSG* lpMsg) { return 0; }
 static inline HWND GetDlgItem(HWND hDlg, int nIDDlgItem) { return nullptr; }
 static inline int GetDlgCtrlID(HWND hwnd) { return 0; }
@@ -309,6 +371,8 @@ static inline BOOL CreateWindowA(LPCSTR lpClassName, LPCSTR lpWindowName, DWORD 
 #define SWP_NOSIZE 0x0001
 #define SWP_NOMOVE 0x0002
 #define SWP_NOZORDER 0x0004
+#define SWP_NOOWNERZORDER 0x0200
+#define SWP_NOCOPYBITS 0x0100
 #define SWP_NOACTIVATE 0x0010
 #define SWP_SHOWWINDOW 0x0040
 #define SW_SHOWDEFAULT 10
@@ -550,13 +614,15 @@ static inline BOOL CreateWindowA(LPCSTR lpClassName, LPCSTR lpWindowName, DWORD 
 #define SC_MOUSEMOVE 0xF012
 #define SC_SEPARATOR 0xF00E
 #if defined(__x86_64__) || defined(__i386__)
+#if !defined(__arm64__) && !defined(__aarch64__)
 #include <emmintrin.h>
+#endif
 #endif
 
 // DirectInput types
 typedef struct { LONG lX; LONG lY; LONG lZ; LONG lRx; LONG lRy; LONG lRz; LONG rglSlider[2]; DWORD rgdwButton[32]; DWORD rgbButtons[32]; LONG lVX; LONG lVY; LONG lVZ; LONG lVRx; LONG lVRy; LONG lVRz; LONG lVFRx; LONG lVFRy; LONG lVFRz; LONG lVFRa; LONG lVFRb; LONG lVFRc; LONG lAS; LONG lARS; DWORD rglAxis[16]; DWORD rgdwPOV[16]; DWORD rglVAxis[16]; DWORD rgVAS; DWORD rgdwVPOV[16]; DWORD rglVPOV[16]; } DIJOYSTATE2;
 typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; } DIDATAFORMAT;
-typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; } DIDEVICEINSTANCE;
+typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWORD dwButtons; DWORD dwPOVs; DWORD dwFFSamplePeriod; DWORD dwFsUpdates; DWORD dwTotalInputs; DWORD dwSID; DWORD dwVendorID; DWORD dwVersion; TCHAR tszProductName[128]; } DIDEVICEINSTANCE;
 
 #include <SDL3/SDL.h>
 
@@ -566,12 +632,16 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 #define SDL_GameControllerClose SDL_CloseGamepad
 #define SDL_GameControllerGetAxis SDL_GamepadGetAxis
 #define SDL_GameControllerGetButton SDL_GamepadGetButton
-#define SDL_GameControllerName SDL_GamepadName
+#define SDL_GameControllerName SDL_GetGamepadName
 #define SDL_GameControllerMappingForIndex SDL_GamepadMappingForIndex
 #define SDL_GameControllerFromInstanceID SDL_GamepadFromInstanceID
 #define SDL_GameControllerEventState SDL_GamepadEventState
 #define SDL_IsGameController SDL_IsGamepad
-#define SDL_GameControllerGetJoystick SDL_GamepadGetJoystick
+#define SDL_GameControllerGetJoystick SDL_GetGamepadJoystick
+
+// SDL3 function aliases that Orbiter code uses directly
+#define SDL_GamepadName SDL_GetGamepadName
+#define SDL_GamepadGetJoystick SDL_GetGamepadJoystick
 
 #define SDL_GetGameControllerInstanceID SDL_GetGamepadInstanceID
 #define SDL_GameControllerGetDeviceInstanceID SDL_GetGamepadDeviceInstanceID
@@ -581,6 +651,8 @@ typedef struct { int X; int Y; } COORD;
 typedef struct { int left; int top; int right; int bottom; } SMALL_RECT;
 typedef struct _CONSOLE_SCREEN_BUFFER_INFO { DWORD cbSize; COORD dwSize; COORD dwCursorPosition; WORD  wAttributes; SMALL_RECT srWindow; COORD dwMaximumWindowSize; } CONSOLE_SCREEN_BUFFER_INFO, *PCONSOLE_SCREEN_BUFFER_INFO;
 typedef struct { int cx; int cy; } SIZE;
+typedef struct { int id; int x; int y; int cx; int cy; int type; int flags; const char* text; void* hwnd; } DLGCTRL;
+typedef struct { DWORD style; DWORD dwExtendedStyle; int cxdlg; int cydlg; WORD cdit; short x; short y; short cx; short cy; LPCSTR lpszName; LPCSTR lpszMenuName; WORD class_name; WORD origin; short width; short height; } DLGTEMPLATE;
 
 typedef SDL_Gamepad* SDL_GameController;
 typedef void* sdl_joystick_handle;
@@ -599,8 +671,7 @@ typedef struct { DWORD dwOfs; DWORD dwTimeStamp; DWORD dwData; DWORD dwFlags; } 
 #define WINAPI __attribute__((cdecl))
 typedef int (WINAPI *FARPROC_T)(void);
 #define CALLBACK __attribute__((stdcall))
-#define LPNMHDR const struct tagNMHDR*
-typedef short POINTS;
+typedef struct { short x; short y; } POINTS;
 
 typedef unsigned char UINT8;
 typedef void* LPMSG;
@@ -611,12 +682,13 @@ typedef LRESULT (CALLBACK *FARPROC)(HWND, UINT, WPARAM, LPARAM);
 typedef void* LPSECURITY_ATTRIBUTES;
 typedef DWORD (*LPTHREAD_START_ROUTINE)(LPVOID);
 typedef DWORD* LPDWORD;
+typedef struct { HRESULT GetDeviceState(DWORD, LPVOID) { return 0; } HRESULT Acquire() { return 0; } HRESULT GetDeviceData(DWORD, DIDEVICEOBJECTDATA*, LPDWORD, DWORD) { return 0; } } *LPDIRECTINPUTDEVICE8;
 #define ATTACH_PARENT_PROCESS 0xFFFFFFFF
 
 
 
 // HTMLHelp functions
-HWND WINAPI HtmlHelpA(HWND hwndCaller, LPCSTR pszFile, UINT uCommand, DWORD_PTR dwData);
+// HWND WINAPI HtmlHelpA(HWND hwndCaller, LPCSTR pszFile, UINT uCommand, DWORD_PTR dwData) { return 0; }
 
 // HTMLHelp macros
 #define HH_DISPLAY_TOPIC 0x0000
@@ -635,25 +707,26 @@ HWND GetConsoleWindow() { return 0; }
 void SetConsoleTitle(const char*) {}
 HMENU GetSystemMenu(HWND, BOOL) { return nullptr; }
 #define MF_BYCOMMAND 0x00000000L
-#define STD_OUTPUT_HANDLE ((HANDLE)-11)
+#define STD_OUTPUT_HANDLE (-11)
 #define WAIT_TIMEOUT 258L
 DWORD WaitForSingleObject(HANDLE, DWORD) { return 0; }
 void CloseHandle(HANDLE) {}
 void ReleaseMutex(HANDLE) {}
-#define STD_INPUT_HANDLE ((HANDLE)-10)
-#define STD_ERROR_HANDLE ((HANDLE)-12)
+#define STD_INPUT_HANDLE (-10)
+#define STD_ERROR_HANDLE (-12)
 SIZE_T lstrlenA(LPCSTR s) { return strlen(s); }
 #define lstrlen lstrlenA
 void strcpy_s(char* d, size_t, const char* s) { strcpy(d,s); }
 #define D3DVAL(x) ((float)(x))
 FARPROC GetProcAddress(HMODULE, const char*) { return 0; }
-HANDLE GetStdHandle(DWORD) { return 0; }
+HANDLE GetStdHandle(int) { return 0; }
 BOOL DeleteMenu(HMENU, UINT, UINT) { return TRUE; }
-HANDLE CreateThread(LPSECURITY_ATTRIBUTES, SIZE_T, LPTHREAD_START_ROUTINE, LPVOID, DWORD, LPDWORD) { return 0; }
+typedef DWORD (WINAPI *LPTHREAD_START_ROUTINE)(LPVOID);
+static inline HANDLE CreateThread(LPSECURITY_ATTRIBUTES sa, SIZE_T stack_size, LPTHREAD_START_ROUTINE start_addr, LPVOID param, DWORD create_flags, LPDWORD thread_id) { return (HANDLE)1; }
+#define CreateThread(sa,stack_size,start_addr,param,create_flags,thread_id) CreateThread(sa,stack_size,start_addr,param,(create_flags)==NULL?0:(create_flags),(thread_id))
 BOOL SetConsoleTextAttribute(HANDLE, WORD) { return TRUE; }
 #define CreateMutex CreateMutexA
 #define CreateDialogA(hInst, lpTemplateName, hWndParent, lpDialogFunc) CreateDialogParamA(hInst, lpTemplateName, hWndParent, lpDialogFunc, 0)
-#define CreateDialog CreateDialogA
 #define ReadConsole ReadConsoleA
 #define WriteConsole WriteConsoleA
 #define MAKEINTRESOURCE(x) ((LPSTR)((ULONG_PTR)((WORD)(x))))
@@ -674,7 +747,7 @@ BOOL GetConsoleScreenBufferInfo(HANDLE, void*) { return TRUE; }
 BOOL SetConsoleCursorPosition(HANDLE, COORD) { return TRUE; }
 BOOL SetConsoleTitleA(const char*) { return TRUE; }
 HANDLE CreateMutexA(LPSECURITY_ATTRIBUTES, BOOL, LPCSTR) { return (HANDLE)1; }
-HWND CreateDialogParamA(HINSTANCE, LPCSTR, HWND, void*, LPARAM) { return nullptr; }
+HWND CreateDialogParamA(HINSTANCE, LPSTR, HWND, DLGPROC, LPARAM) { return nullptr; }
 BOOL UpdateWindow(HWND) { return TRUE; }
 BOOL KillTimer(HWND, UINT_PTR) { return TRUE; }
 BOOL TerminateThread(HANDLE, DWORD) { return FALSE; }
@@ -689,19 +762,98 @@ BOOL InvalidateRect(HWND, const RECT*, BOOL) { return TRUE; }
 BOOL RedrawWindow(HWND, const RECT*, HRGN, UINT) { return TRUE; }
 UINT GetWindowLongPtrA(HWND, int) { return 0; }
 LONG_PTR SetWindowLongPtrA(HWND, int, LONG_PTR) { return 0; }
+#define SetWindowLongPtr SetWindowLongPtrA
+#define SWP_FRAMECHANGED 0x0001
 BOOL IsWindow(HWND) { return FALSE; }
 UINT_PTR SetTimer(HWND, UINT_PTR, UINT, void*) { return 1; }
 HMENU GetMenu(HWND) { return nullptr; }
 BOOL AdjustWindowRectEx(LPRECT, DWORD, BOOL, DWORD) { return TRUE; }
 LONG SetWindowLongA(HWND, int, LONG) { return 0; }
 HICON LoadIconA(HINSTANCE, LPCSTR) { return (HICON)1; }
+#define LoadIcon LoadIconA
 HCURSOR LoadCursorA(HINSTANCE, LPCSTR) { return (HCURSOR)1; }
 HFONT GetStockObjectA(int) { return (HFONT)0; }
+#define SM_CYSCREEN 1
+static inline BOOL StretchBlt(HDC,int,int,int,int,HDC,int,int,int,int,UINT) { return TRUE; }
+static inline HBRUSH GetSysColorBrush(int) { return (HBRUSH)1; }
+#define PBM_SETRANGE 0x0201
+#define MAKELPARAM(w,l) ((LPARAM)(((WORD)(w))|((DWORD)((WORD)(l)))<<16))
+#define TRANSPARENT 1
+#define WM_CTLCOLORDLG 0x0137
+#define PBM_SETPOS 0x0203
+#define RDW_UPDATENOW 0x0100
+#define RDW_ALLCHILDREN 0x0040
+#define TVE_EXPAND 0x0002
+#define TVE_COLLAPSE 0x0001
+#define TV_FIRST 0x1100
+#define TVM_FIRST TV_FIRST
+#define TVGN_CARET 0x0009
+#define TVM_DELETEITEM (TVM_FIRST + 0x0007)
+#define TVI_ROOT ((HTREEITEM)-1)
+#define TVM_GETNEXTITEM (TVM_FIRST + 0x0008)
+#define TVGN_NEXT 0x0001
+#define TVM_GETITEM (TVM_FIRST + 0x000D)
+#define TVGN_CHILD 0x0004
+#define TVIF_SELECTEDIMAGE 0x0020
+#define TVGN_NEXT 0x0001
+#define GetSystemMetrics(int) 0
+#define TreeView_Expand(HWND,HTREEITEM,UINT) {}
+#define TreeView_SetCheckState(HWND,HTREEITEM,BOOL) {}
+#define TVIS_STATEIMAGEMASK 0xF000
+#define TreeView_GetCheckState(HWND,HTREEITEM) 0
+#define MB_ICONWARNING 0x00000030L
+#define NM_CUSTOMDRAW ((UINT)(-2300000012))
+#define GWLP_HWNDPARENT (-8)
+typedef struct { UINT cbSize; UINT style; LRESULT (*lpfnWndProc)(HWND, UINT, WPARAM, LPARAM); int cbClsExtra; int cbWndExtra; HINSTANCE hInstance; HICON hIcon; HCURSOR hCursor; HBRUSH hbrBackground; LPCSTR lpszMenuName; LPCSTR lpszClassName; HICON hIconSm; } WNDCLASSEX;
+static inline ATOM RegisterClassExA(const WNDCLASSEX*) { return 1; }
+#define RegisterClassEx RegisterClassExA
+#define TreeView_SetItemState(HWND,HTREEITEM,uState,uMask) {}
+#define LoadResourceA(H,HRC) ((HGLOBAL)1)
+#define LoadResource(H,HRC) ((HGLOBAL)1)
+#define LockResource(HGLOBAL) ((LPVOID)1)
+#define _splitpath(s,drive,dir,name,ext) {}
+#define CB_FINDSTRING 0x014C
+#define CB_GETLBTEXT 0x0148
+#define CB_FINDSTRINGEXACT 0x0158
+#define LBN_SELCHANGE 0x0001
+#define LB_GETSEL 0x0187
+#define LB_RESETCONTENT 0x0184
+#define LB_SETSEL 0x0185
+#define SB_LINEDOWN 0x0001
+#define SB_LINEUP 0x0000
+#define SB_PAGEDOWN 0x0003
+#define SB_PAGEUP 0x0002
+#define CBN_SELCHANGE 0x0005
+#define WS_SIZEBOX 0x00040000L
+#define SW_SHOWNOACTIVATE 7
+#define WM_MOVE 0x0003
+#define WM_APP 0x8000
+#define FindFirstChangeNotificationA(LPSTR,BOOL,DWORD) ((HANDLE)1)
+#define FindFirstChangeNotification FindFirstChangeNotificationA
+static inline char* _fullpath(char* buf, const char* path, size_t maxlen) { return realpath(path, buf); }
+#define WS_HSCROLL 0x00010000L
+#define WS_THICKFRAME 0x00040000L
+#define MAKELONG(w,l) ((LONG)(((WORD)(w))|((DWORD)((WORD)(l)))<<16))
+static inline HDC GetWindowDC(HWND) { return (HDC)1; }
+static inline BOOL BitBlt(HDC,int,int,int,int,HDC,int,int,UINT) { return TRUE; }
+#define ImageList_Destroy(HIMAGELIST) TRUE
+#define TVI_FIRST ((HTREEITEM)-3)
+#define TVGN_PREVIOUS 0x0003
+static inline HTREEITEM TreeView_GetParent(HWND, HTREEITEM) { return 0; }
+#define MB_ICONQUESTION 0x00000020L
+#define MB_ICONINFORMATION 0x00000040L
+#define FILE_NOTIFY_CHANGE_FILE_NAME 0x00000001
+#define FILE_NOTIFY_CHANGE_DIR_NAME 0x00000002
+#define INFINITE 0xFFFFFFFF
+#define WAIT_OBJECT_0 0
+static inline HANDLE FindNextChangeNotification(HANDLE) { return (HANDLE)1; }
+static inline BOOL FindCloseChangeNotification(HANDLE) { return TRUE; }
+static inline HTREEITEM TreeView_SelectItem(HWND, HTREEITEM) { return 0; }
 HGDIOBJ SelectObject(HDC, HGDIOBJ) { return nullptr; }
 int GetClientRect(HWND, RECT*) { return 0; }
 LRESULT DefDlgProcA(HWND, UINT, WPARAM, LPARAM) { return 0; }
 int SendDlgItemMessageA(HWND, int, UINT, WPARAM, LPARAM) { return 0; }
-BOOL IsDialogMessageA(HWND, MSG*) { return FALSE; }
+BOOL IsDialogMessageA(HWND, void*) { return FALSE; }
 HFONT CreateFontA(int, int, int, int, int, BOOL, BOOL, BOOL, UINT, UINT, UINT, UINT, UINT, LPCSTR) { return (HFONT)1; }
 HRGN CreateRectRgn(int, int, int, int) { return (HRGN)1; }
 int GetTextExtentPoint32A(HDC, LPCSTR, int, SIZE*) { return 0; }
@@ -713,4 +865,183 @@ BOOL GetWindowRect(HWND, RECT*) { return TRUE; }
 HINSTANCE LoadLibraryA(LPCSTR) { return (HINSTANCE)1; }
 BOOL FreeLibrary(HINSTANCE) { return TRUE; }
 BOOL SetConsoleCtrlHandler(void*, BOOL) { return TRUE; }
+
+static inline UINT timeBeginPeriod(UINT uMilliseconds) { return 1; }
+static inline BOOL PostMessageA(HWND, UINT, WPARAM, LPARAM) { return FALSE; }
+static inline BOOL PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) { return PostMessageA(hWnd, Msg, wParam, lParam); }
+static inline BOOL InitCommonControls() { return TRUE; }
+static inline BOOL GetClassInfoA(HINSTANCE, LPCSTR, WNDCLASS*) { return TRUE; }
+static inline LONG RegOpenKeyExA(HKEY, LPCSTR, DWORD, DWORD, HKEY*) { return 0; }
+#define RegOpenKeyEx RegOpenKeyExA
+static inline LONG RegCloseKey(HKEY) { return 0; }
+static inline HMODULE LoadLibraryExA(LPCSTR, HANDLE, DWORD) { return (HMODULE)1; }
+#define LoadLibraryEx LoadLibraryExA
+static inline HCURSOR SetCursor(HCURSOR) { return 0; }
+#define _chdir chdir
+static inline int _execl(const char* path, const char* arg, ...) { return 0; }
+#define PM_NOREMOVE 0x0000
+#define WM_QUIT 0x0012
+static inline BOOL PeekMessageA(LPMSG, HWND, UINT, UINT, UINT) { return FALSE; }
+static inline BOOL GetMessageA(LPMSG, HWND, UINT, UINT) { return FALSE; }
+#define HKEY_CURRENT_USER ((HKEY)0x80000001u)
+static inline int ShowCursor(BOOL) { return 1; }
+static inline BOOL SetCapture(HWND) { return TRUE; }
+static inline BOOL ClientToScreen(HWND, POINT*) { return TRUE; }
+static inline BOOL ClipCursor(const RECT*) { return TRUE; }
+static inline BOOL ReleaseCapture() { return TRUE; }
+#define DIERR_NOTACQUIRED (-2128964351)
+#define DIERR_INPUTLOST (-2128964351)
+#define SUCCEEDED(x) ((HRESULT)(x) >= 0)
+#define DIK_LSHIFT 0xA0
+#define WM_ACTIVATE 0x0006
+#define WA_INACTIVE 0
+#define WM_CHAR 0x0102
+static inline DWORD GetWindowThreadProcessId(HWND, LPDWORD) { return 0; }
+static inline HWND SetFocus(HWND) { return 0; }
+#define SDL_SYSWMEVENT 0
+typedef struct { POINT ptReserved; POINT ptMaxSize; POINT ptMaxPosition; POINT ptMinTrackSize; POINT ptMaxTrackSize; } MINMAXINFO;
+#define WM_POWERBROADCAST 0x0218
+#define PBT_APMQUERYSUSPEND 0x0000
+#define PBT_APMRESUMESUSPEND 0x0003
+#define SC_MONITORPOWER 0xF170
+static inline LRESULT SendMessageA(HWND, UINT, WPARAM, LPARAM) { return 0; }
+static inline LRESULT SendMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) { return SendMessageA(hWnd, Msg, wParam, lParam); }
+#define HTCLIENT 0x0001
+#define WM_NOTIFY 0x004E
+#define GWL_STYLE (-16)
+#define TVS_DISABLEDRAGDROP 0x0800
+#define TVS_SHOWSELALWAYS 0x0008
+#define TVS_NOTOOLTIPS 0x0080
+#define WS_BORDER 0x00800000L
+#define WS_TABSTOP 0x00010000L
+#define DefWindowProc DefWindowProcA
+static inline BOOL SystemParametersInfoA(UINT, UINT, PVOID, UINT) { return FALSE; }
+#define SystemParametersInfo SystemParametersInfoA
+#define KEY_QUERY_VALUE 0x0001
+#define ERROR_SUCCESS 0
+#define SW_MAXIMIZE 3
+#define SPI_GETFONTSMOOTHING 0x004B
+#define SPI_SETFONTSMOOTHING 0x004C
+#define SPIF_SENDCHANGE 0x0002
+static inline void timeEndPeriod(UINT uMilliseconds) { }
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#define LOAD_LIBRARY_SEARCH_DEFAULT_DIRS 0x00000800
+#define LOAD_LIBRARY_AS_DATAFILE 0x00000040
+static inline UINT LoadStringA(HINSTANCE, UINT, LPSTR, int) { return 0; }
+#define LoadString LoadStringA
+static inline DWORD GetLastError() { return 0; }
+
+// Additional Win32 stubs
+static inline DWORD GetCurrentDirectoryA(DWORD nBufferLength, LPSTR lpBuffer) {
+    if (lpBuffer) {
+        char* cwd = getcwd(nullptr, 0);
+        if (cwd) {
+            size_t len = strlen(cwd);
+            if (len < nBufferLength) {
+                strcpy(lpBuffer, cwd);
+                free(cwd);
+                return len;
+            }
+            free(cwd);
+        }
+        if (!lpBuffer[0]) lpBuffer[0] = '/';
+        return 0;
+    }
+    return 0;
+}
+#define GetCurrentDirectory GetCurrentDirectoryA
+
+static inline BOOL SetCurrentDirectoryA(LPCSTR lpPathName) {
+    return (chdir(lpPathName) == 0);
+}
+
+static inline int _chmod(const char* pathname, int mode) { return chmod(pathname, mode); }
+static inline BOOL SetWindowTextA(HWND, LPCSTR) { return TRUE; }
+#define HIMAGELIST HANDLE
+#define ILC_COLOR8 0x00000020L
+static inline HIMAGELIST ImageList_Create(int, int, int, int, int) { return (HIMAGELIST)1; }
+static inline int ImageList_Add(HIMAGELIST, HBITMAP, COLORREF) { return 0; }
+#define TVM_SETIMAGELIST (TVM_FIRST + 0x0019)
+#define TVSIL_NORMAL 0
+#define SW_HIDE 0
+#define SW_SHOW 5
+#define BM_SETCHECK 0x00F0
+#define BST_CHECKED 1
+#define BST_UNCHECKED 0
+#define IDHELP 4
+#define WM_SHOWWINDOW 0x001F
+#define WM_CTLCOLORSTATIC 0x0138
+#define SIZE_RESTORED 0
+#define SIZE_MINIMIZED 1
+#define ARRAYSIZE(x) (sizeof(x)/sizeof(x[0]))
+#define ETDT_ENABLE 1
+#define IsDialogMessage IsDialogMessageA
+#define EnableWindow(HWND,BOOL) TRUE
+#define IsIconic(HWND) FALSE
+#define PostQuitMessage(int) {}
+#define BLACK_BRUSH 4
+#define LoadImage LoadImageA
+#define IMAGE_BITMAP 0
+static inline HBITMAP LoadImageA(HINSTANCE, LPCSTR, UINT, int, int, UINT) { return (HBITMAP)1; }
+static inline BOOL DeleteObject(HGDIOBJ) { return TRUE; }
+#define GetWindowLongPtr GetWindowLongPtrA
+#define SendDlgItemMessage SendDlgItemMessageA
+#define ShellExecute ShellExecuteA
+#define FindResource FindResourceA
+#define TVIF_HANDLE 0x0010
+#define TVIF_CHILDREN 0x0080
+#define TVN_SELCHANGED (-455)
+#define NM_DBLCLK 3
+typedef struct { int mask; HTREEITEM hItem; UINT state; UINT stateMask; LPSTR pszText; int cchTextMax; int iImage; int iSelectedImage; int cChildren; LPARAM lParam; } TV_ITEM;
+typedef struct { NMHDR hdr; UINT action; HTREEITEM hItem; LPARAM lParam; TV_ITEM itemNew; } NM_TREEVIEW;
+typedef NM_TREEVIEW* LPNMTREEVIEW;
+#define TVITEM TV_ITEM
+#define GetConsoleProcessList(a,b) 1
+#define CreateDialogParam CreateDialogParamA
+#define DWLP_USER 8
+#define HWND_BOTTOM ((HWND)1)
+#define LB_ADDSTRING 0x0180
+#define SW_SHOWNORMAL 1
+#define CB_RESETCONTENT 0x014B
+#define CB_ADDSTRING 0x0143
+#define CB_SETCURSEL 0x014E
+#define BM_GETCHECK 0x0F0E
+#define CB_GETCURSEL 0x0147
+#define CB_ERR (-1)
+#define BN_CLICKED 0
+#define MB_ICONEXCLAMATION 0x00000030L
+static inline int GetWindowTextA(HWND, LPSTR, int) { return 0; }
+#define GetWindowText GetWindowTextA
+#define EnableThemeDialogTexture(HWND,UINT) S_OK
+static inline DWORD SetTextColor(HDC, COLORREF) { return 0; }
+static inline DWORD SetBkColor(HDC, COLORREF) { return 0; }
+static inline int SetBkMode(HDC, int) { return 0; }
+#define DialogBoxParamA(hInst,lpTemplateName,hWndParent,lpDialogFunc,LPARAM) 0
+#define FindResourceA(h,lpName,lpType) ((HRSRC)1)
+static inline HDC CreateCompatibleDC(HDC) { return (HDC)1; }
+static inline BOOL DeleteDC(HDC) { return TRUE; }
+#define SRCCOPY 0x00CC0020
+#define COLOR_3DFACE 15
+#define NULL_PEN 8
+static inline BOOL Rectangle(HDC, int, int, int, int) { return TRUE; }
+typedef MINMAXINFO* LPMINMAXINFO;
+#define DialogBoxParam DialogBoxParamA
+#define EndDialog(hwnd,retval) {}
+#define TVI_LAST ((HTREEITEM)-2)
+#define TVI_SORT ((HTREEITEM)-5)
+typedef struct { HTREEITEM hInsertAfter; HTREEITEM hItem; HTREEITEM hParent; UINT format; TV_ITEM item; LPARAM lParam; } TV_INSERTSTRUCT;
+static inline BOOL TreeView_DeleteItem(HWND, HTREEITEM) { return TRUE; }
+static inline void TreeView_DeleteAllItems(HWND) {}
+static inline HTREEITEM TreeView_InsertItem(HWND, const TV_INSERTSTRUCT*) { return 0; }
+static inline HTREEITEM TreeView_GetItem(HWND, const TV_ITEM*) { return 0; }
+static inline HTREEITEM TreeView_GetNextSibling(HWND, HTREEITEM) { return 0; }
+static inline HTREEITEM TreeView_GetChild(HWND, HTREEITEM) { return 0; }
+static inline HTREEITEM TreeView_GetRoot(HWND) { return 0; }
+static inline HTREEITEM TreeView_GetSelection(HWND) { return 0; }
+typedef void* HGDIOBJ;
+#define CP_UTF8 65001
+static inline int MultiByteToWideChar(UINT CodePage, UINT dwFlags, const char* lpMultiByteStr, int cbMultiByte, wchar_t* lpWideCharStr, int cchWideChar) { return 0; }
+static inline HBITMAP LoadBitmapA(HINSTANCE, LPCSTR) { return (HBITMAP)1; }
+#define LoadBitmap LoadBitmapA
+#define COLORREF ULONG
 #endif // PLATFORM_SDL_H

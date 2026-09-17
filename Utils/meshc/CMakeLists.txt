@@ -7,7 +7,7 @@ add_executable(meshc
 )
 
 target_include_directories(meshc
-	PUBLIC ${ORBITER_SOURCE_DIR}
+	PUBLIC ${ORBITER_SOURCE_DIR} PUBLIC ${ORBITER_SOURCE_DIR}/include
 )
 
 set_target_properties(meshc

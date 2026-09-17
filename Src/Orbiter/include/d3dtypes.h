@@ -5,8 +5,6 @@
 
 #pragma once
 
-#ifdef ORBITER_BUILD_SDLGPUCLIENT
-
 #include "platform_sdl.h"
 
 // Direct3D types
@@ -116,5 +114,3 @@ typedef struct {
     D3DVALUE          power;
     D3DCOLOR          emissive;
 } D3DMATERIAL7, *LPD3DMATERIAL7;
-
-#endif // ORBITER_BUILD_SDLGPUCLIENT

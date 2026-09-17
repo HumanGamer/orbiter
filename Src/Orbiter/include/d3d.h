@@ -5,8 +5,6 @@
 
 #pragma once
 
-#ifdef ORBITER_BUILD_SDLGPUCLIENT
-
 #include "platform_sdl.h"
 
 class IDirect3DDevice7;
@@ -61,5 +59,3 @@ typedef struct {
 #define D3DFVF_TEXCOORDSIZE2(idx)  (0 << (idx * 4))
 #define D3DFVF_TEXCOORDSIZE3(idx)  (1 << (idx * 4))
 #define D3DFVF_TEXCOORDSIZE4(idx)  (2 << (idx * 4))
-
-#endif // ORBITER_BUILD_SDLGPUCLIENT

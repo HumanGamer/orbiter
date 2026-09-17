@@ -121,6 +121,25 @@ DWORD           g_qsaveid        = 0;
 DWORD           g_customcmdid    = 0;
 int             g_iCursorShowCount = 0;
 
+// Forward declaration of ORBITER_GetVersion wrapper
+int ORBITER_GetVersion ();
+
+int ORBITER_GetVersion ()
+{
+	if (g_pOrbiter) return g_pOrbiter->GetVersion();
+	static int v = 0;
+	if (!v) {
+		static const char *mstr[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+		char ms[32];
+		int day, month, year;
+		sscanf (__DATE__, "%s%d%d", ms, &day, &year);
+		for (month = 0; month < 12; month++)
+			if (!_strnicmp (ms, mstr[month], 3)) break;
+		v = (year%100)*10000 + (month+1)*100 + day;
+	}
+	return v;
+}
+
 // 2D info output flags
 BOOL g_bOutputTime  = TRUE;
 BOOL g_bOutputFPS   = TRUE;
@@ -2755,7 +2774,7 @@ bool Orbiter::RemoveGraphicsClient (oapi::GraphicsClient *gc)
 
 bool Orbiter::RegisterWindow (HINSTANCE hInstance, HWND hWnd, DWORD flag)
 {
-	return (pDlgMgr ? (pDlgMgr->AddWindow (hInstance, hWnd, hRenderWnd, flag) != NULL) : NULL);
+	return (pDlgMgr ? (pDlgMgr->AddWindow (hInstance, hWnd, hRenderWnd, flag) != NULL) : false);
 }
 
 void Orbiter::UpdateDeallocationProgress()

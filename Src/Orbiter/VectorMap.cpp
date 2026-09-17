@@ -424,7 +424,7 @@ void VectorMap::CheckSelection ()
 		break;
 	}
 	if (clearselection) {
-		OBJTYPE nullobj = {0,NULL};
+				OBJTYPE nullobj = {nullptr, 0};
 		SetSelection (nullobj);
 	}
 }

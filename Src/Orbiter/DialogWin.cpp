@@ -167,7 +167,7 @@ BOOL DialogWin::OnCommand (HWND hDlg, WORD id, WORD code, HWND hControl)
 
 // ======================================================================
 
-int DialogWin::OnSize (HWND hWnd, WPARAM wParam, int w, int h)
+BOOL DialogWin::OnSize (HWND hWnd, WPARAM wParam, int w, int h)
 {
 	if (pos) GetWindowRect (hWnd, pos);
 	return 0;
@@ -175,7 +175,7 @@ int DialogWin::OnSize (HWND hWnd, WPARAM wParam, int w, int h)
 
 // ======================================================================
 
-int DialogWin::OnMove (HWND hWnd, int x, int y)
+BOOL DialogWin::OnMove (HWND hWnd, int x, int y)
 {
 	if (pos) GetWindowRect (hWnd, pos);
 	return 0;

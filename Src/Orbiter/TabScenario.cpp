@@ -78,7 +78,7 @@ void orbiter::ScenarioTab::Create ()
 	splitListDesc.SetHwnd (GetDlgItem (hTab, IDC_SCN_SPLIT1), GetDlgItem (hTab, IDC_SCN_LIST), GetDlgItem (hTab, infoId));
 
 	// create a thread to monitor changes to the scenario list
-	hThread = CreateThread (NULL, NULL, threadWatchScnList, this, NULL, NULL);
+	hThread = CreateThread (NULL, 0, threadWatchScnList, this, 0, NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -157,7 +157,7 @@ BOOL orbiter::ScenarioTab::OnSize (int w, int h)
 		r_pause0.left+dw, r_pause0.top, 0, 0,
 		SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOOWNERZORDER|SWP_NOZORDER|SWP_NOCOPYBITS);
 
-	return NULL;
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -209,7 +209,7 @@ void orbiter::ScenarioTab::RefreshList (bool preserveSelection)
 	if (Launchpad()->Visible()) {
 		char cbuf[256], ch[256], * pc, * c;
 		GetSelScenario(cbuf, 256);
-		SendDlgItemMessage(hTab, IDC_SCN_LIST, TVM_SELECTITEM, TVGN_CARET, NULL);
+		SendDlgItemMessage(hTab, IDC_SCN_LIST, TVM_SELECTITEM, TVGN_CARET, (LPARAM)0);
 		// remove selection to avoid repeated TVN_SELCHANGED messages while the list is cleared
 		//DWORD styles = GetWindowLongPtr(GetDlgItem(hTab, IDC_SCN_LIST), GWL_STYLE);
 		SendDlgItemMessage(hTab, IDC_SCN_LIST, TVM_DELETEITEM, 0, (LPARAM)TVI_ROOT);

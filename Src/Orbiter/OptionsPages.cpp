@@ -96,7 +96,7 @@ void OptionsPageContainer::ExpandAll()
 	HWND hTree = GetDlgItem(m_hDlg, IDC_OPT_PAGELIST);
 	UINT code = (expand ? TVE_EXPAND : TVE_COLLAPSE);
 	TVITEM catitem;
-	catitem.mask = NULL;
+	catitem.mask = 0;
 	catitem.hItem = TreeView_GetRoot(hTree);
 	while (TreeView_GetItem(hTree, &catitem)) {
 		TreeView_Expand(hTree, catitem.hItem, code);

@@ -800,7 +800,8 @@ void Mesh::SetName(const char* n)
 	if (n) {
 		int len = strlen(n) + 1;
 		name = new char[len];
-		strcpy(name, len, n);
+		strncpy(name, n, len);
+		name[len-1] = '\0';
 	}
 }
 
@@ -1124,6 +1125,7 @@ const Mesh *MeshManager::LoadMesh (const char *fname, bool *firstload)
 	mlist[nmlist].mesh = mesh;
 	mlist[nmlist].crc  = crc;
 	strncpy (mlist[nmlist].fname, fname, 32);
+	mlist[nmlist].fname[31] = '\0';
 	nmlist++;
 	if (firstload) *firstload = true;
 	return mesh;

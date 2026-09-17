@@ -22,7 +22,7 @@
 #include "OrbiterAPI.h"
 #include <assert.h>
 #if defined(__x86_64__) || defined(__i386__)
-#if defined(__x86_64__) || defined(__i386__)
+#if !defined(__arm64__) && !defined(__aarch64__)
 #include <xmmintrin.h>
 #endif
 #endif

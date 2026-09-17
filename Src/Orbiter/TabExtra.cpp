@@ -138,7 +138,7 @@ BOOL orbiter::ExtraTab::OnSize (int w, int h)
 		r_edit0.left, r_edit0.top+dh, 0, 0,
 		SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-	return NULL;
+	return false;
 }
 
 //-----------------------------------------------------------------------------

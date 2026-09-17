@@ -59,8 +59,14 @@ typedef struct {
 	WORD      Flags;
 	DWORD     TexIdxEx[MAXTEX];
 	float     TexMixEx[MAXTEX];
+#ifndef ORBITER_BUILD_SDLGPUCLIENT
 	typedef void* LPDIRECT3DVERTEXBUFFER7;
 	LPDIRECT3DVERTEXBUFFER7 VtxBuf;
+#else
+	struct VtxBufStub { void* Release() { return nullptr; } };
+	typedef VtxBufStub* LPDIRECT3DVERTEXBUFFER7;
+	LPDIRECT3DVERTEXBUFFER7 VtxBuf;
+#endif
 } GroupSpec;
 
 // =======================================================================

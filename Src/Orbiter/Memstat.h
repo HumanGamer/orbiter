@@ -11,7 +11,11 @@
 #include <psapi.h>
 #endif
 
+#ifndef ORBITER_BUILD_SDLGPUCLIENT
 typedef BOOL (CALLBACK *Proc_GetProcessMemoryInfo)(HANDLE,PPROCESS_MEMORY_COUNTERS,DWORD);
+#else
+typedef BOOL (CALLBACK *Proc_GetProcessMemoryInfo)(HANDLE,PPROCESS_MEMORY_COUNTERS,DWORD);
+#endif
 
 class MemStat {
 public:

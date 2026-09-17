@@ -137,7 +137,7 @@ BOOL orbiter::ModuleTab::OnSize (int w, int h)
 		r_bt2.left, r_bt2.top+dh, 0, 0,
 		SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 
-	return NULL;
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -247,9 +247,9 @@ HTREEITEM orbiter::ModuleTab::GetCategoryItem (char *cat)
 	TV_INSERTSTRUCT tvis;
 	tvis.item.mask = TVIF_TEXT | TVIF_PARAM;
 	tvis.item.pszText = cat;
-	tvis.item.lParam = NULL;
+	tvis.item.lParam = 0;
 	tvis.hInsertAfter = TVI_SORT;
-	tvis.hParent = NULL;
+	tvis.hParent = 0;
 	return TreeView_InsertItem (hTree, &tvis);
 }
 
@@ -258,7 +258,7 @@ void orbiter::ModuleTab::ExpandCollapseAll (bool expand)
 	HWND hTree = GetDlgItem (hTab, IDC_MOD_TREE);
 	UINT code = (expand ? TVE_EXPAND : TVE_COLLAPSE);
 	TVITEM catitem;
-	catitem.mask = NULL;
+	catitem.mask = 0;
 	catitem.hItem = TreeView_GetRoot (hTree);
 	while (TreeView_GetItem (hTree, &catitem)) {
 		TreeView_Expand (hTree, catitem.hItem, code);
@@ -340,9 +340,9 @@ void orbiter::ModuleTab::DeactivateAll ()
 {
 	HWND hTree = GetDlgItem (hTab, IDC_MOD_TREE);
 	TVITEM catitem, subitem;
-	catitem.mask = NULL;
+	catitem.mask = 0;
 	catitem.hItem = TreeView_GetRoot (hTree);
-	subitem.mask = NULL;
+	subitem.mask = 0;
 
 	while (TreeView_GetItem (hTree, &catitem)) {
 		subitem.hItem = TreeView_GetChild (hTree, catitem.hItem);
@@ -420,5 +420,5 @@ BOOL orbiter::ModuleTab::OnMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 		return 0;
 	}
-	return NULL;
+	return false;
 }
