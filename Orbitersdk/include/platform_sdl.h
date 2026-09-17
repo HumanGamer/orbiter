@@ -589,6 +589,9 @@ typedef void* HTREEITEM;
 typedef long long LONGLONG;
 typedef size_t SIZE_T;
 typedef void* FARPROC;
+typedef void* LPSECURITY_ATTRIBUTES;
+typedef DWORD (*LPTHREAD_START_ROUTINE)(LPVOID);
+typedef DWORD* LPDWORD;
 #define ATTACH_PARENT_PROCESS 0xFFFFFFFF
 
 
