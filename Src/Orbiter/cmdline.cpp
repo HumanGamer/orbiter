@@ -236,6 +236,8 @@ void orbiter::CommandLine::ApplyOption(const Key* key, const std::string& value)
 void orbiter::CommandLine::PrintHelpAndExit() const
 {
 	// Get console output
+	if (!AttachConsole(ATTACH_PARENT_PROCESS)) { AllocConsole(); }
+	if (!AttachConsole(ATTACH_PARENT_PROCESS)) { AllocConsole(); }
 	if (AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole()) {
 		freopen("CONOUT$", "w", stdout);
 	}

@@ -50,6 +50,10 @@ private:
 	CDIFramework7 *diframe;
 	JoyProp joyprop;
 	HWND m_hWnd;
+#ifdef ORBITER_BUILD_SDLGPUCLIENT
+	void* m_sdlGameController;
+	void* m_sdlWindow;
+#endif
 };
 
 #endif // !__INPUT_H

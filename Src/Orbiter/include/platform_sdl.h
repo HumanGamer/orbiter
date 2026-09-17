@@ -39,11 +39,15 @@ typedef const char* LPCSTR;
 typedef wchar_t* LPWSTR;
 typedef const wchar_t* LPCWSTR;
 typedef unsigned short WORD;
+typedef WORD ATOM;
 typedef long LONG;
 typedef long LONG_PTR;
 typedef int INT;
 typedef uintptr_t UINT_PTR;
 typedef uintptr_t DWORD_PTR;
+typedef uintptr_t ULONG_PTR;
+typedef int64_t LONG64;
+typedef int64_t LARGE_INTEGER;
 typedef const char* LPCTSTR;
 typedef const char* LPCSTR;
 typedef char* LPSTR;
@@ -77,6 +81,7 @@ typedef void* HPEN;
 typedef void* HBRUSH;
 typedef void* HICON;
 typedef void* HCURSOR;
+typedef void* HRGN;
 typedef void* HBITMAP;
 typedef void* HFONT;
 typedef unsigned long COLORREF;
@@ -240,6 +245,9 @@ static inline HRESULT FAILED(HRESULT hr) { return HRESULT_FAILED(hr); }
 #define PROCESS_VM_READ 0x0010
 #define Z_OK 0
 #define __declspec(x) __attribute__((x))
+#define FAR
+#define PASCAL
+#define STDMETHODCALLTYPE
 #define _ASSERTE(x) ((x) ? (void)0 : abort())
 #define STRSAFE_E_INVALID_LENGTH 0x800700CF
 static inline DWORD GetProcessId(HANDLE hProcess) { return 0; }
@@ -429,6 +437,10 @@ static inline BOOL CreateWindowA(LPCSTR lpClassName, LPCSTR lpWindowName, DWORD 
 #define WM_DRAWITEM 0x02B0
 #define WM_DELETEITEM 0x027E
 #define WM_VKEYTOITEM 0x022E
+#define WM_INITDIALOG 0x0110
+#define WM_TIMER 0x0113
+#define IDOK 1
+#define IDCANCEL 2
 #define WM_CHARTOITEM 0x022F
 #define WM_SETFONT 0x0030
 #define WM_GETFONT 0x0031
@@ -557,11 +569,18 @@ typedef struct { DWORD dwSize; DWORD dwFlags; DWORD dwDevType; DWORD dwAxes; DWO
 #define SDL_GameControllerFromInstanceID SDL_GamepadFromInstanceID
 #define SDL_GameControllerEventState SDL_GamepadEventState
 #define SDL_IsGameController SDL_IsGamepad
+#define SDL_GameControllerGetJoystick SDL_GamepadGetJoystick
 
 #define SDL_GetGameControllerInstanceID SDL_GetGamepadInstanceID
 #define SDL_GameControllerGetDeviceInstanceID SDL_GetGamepadDeviceInstanceID
 
 #include <SDL3/SDL.h>
+
+typedef struct SDL_Joystick SDL_Joystick;
+typedef struct { int X; int Y; } COORD;
+typedef struct { int left; int top; int right; int bottom; } SMALL_RECT;
+typedef struct _CONSOLE_SCREEN_BUFFER_INFO { DWORD cbSize; COORD dwSize; COORD dwCursorPosition; WORD  wAttributes; SMALL_RECT srWindow; COORD dwMaximumWindowSize; } CONSOLE_SCREEN_BUFFER_INFO, *PCONSOLE_SCREEN_BUFFER_INFO;
+typedef struct { int cx; int cy; } SIZE;
 
 typedef SDL_Gamepad* SDL_GameController;
 typedef void* sdl_joystick_handle;
@@ -588,7 +607,7 @@ typedef void* LPMSG;
 typedef void* HTREEITEM;
 typedef long long LONGLONG;
 typedef size_t SIZE_T;
-typedef void* FARPROC;
+typedef LRESULT (CALLBACK *FARPROC)(HWND, UINT, WPARAM, LPARAM);
 typedef void* LPSECURITY_ATTRIBUTES;
 typedef DWORD (*LPTHREAD_START_ROUTINE)(LPVOID);
 typedef DWORD* LPDWORD;
@@ -609,8 +628,8 @@ BOOL GetCursorPos(POINT* p) { *p = {0,0}; return TRUE; }
 BOOL ScreenToClient(HWND, POINT*) { return TRUE; }
 BOOL SetCursorPos(int, int) { return TRUE; }
 HWND GetDesktopWindow() { return 0; }
-void AllocConsole() {}
-void AttachConsole(DWORD) {}
+BOOL AllocConsole() {}
+BOOL AttachConsole(DWORD) {}
 void sprintf_s(char* d, size_t, const char* f, ...) {}
 HWND GetConsoleWindow() { return 0; }
 void SetConsoleTitle(const char*) {}
@@ -640,4 +659,62 @@ BOOL SetConsoleTextAttribute(HANDLE, WORD) { return TRUE; }
 #define FOREGROUND_GREEN 0x0002
 #define FOREGROUND_BLUE 0x0001
 #define FOREGROUND_INTENSITY 0x0008
+
+// Console I/O and window management stubs
+BOOL SetConsoleMode(HANDLE hConsoleHandle, DWORD dwMode) { return TRUE; }
+BOOL GetConsoleMode(HANDLE hConsoleHandle, DWORD* lpMode) { if(lpMode) *lpMode = 0; return TRUE; }
+BOOL ReadConsoleA(HANDLE, void*, DWORD, DWORD*, void*) { return FALSE; }
+BOOL WriteConsoleA(HANDLE, const void*, DWORD, DWORD*, void*) { return TRUE; }
+BOOL GetConsoleScreenBufferInfo(HANDLE, void*) { return TRUE; }
+BOOL SetConsoleCursorPosition(HANDLE, COORD) { return TRUE; }
+BOOL SetConsoleTextAttribute(HANDLE, WORD) { return TRUE; }
+BOOL SetConsoleTitleA(const char*) { return TRUE; }
+HANDLE CreateMutexA(LPSECURITY_ATTRIBUTES, BOOL, LPCSTR) { return (HANDLE)1; }
+HWND CreateDialogParamA(HINSTANCE, LPCSTR, HWND, void*, LPARAM) { return nullptr; }
+HWND CreateWindowExA(DWORD, LPCSTR, LPCSTR, DWORD, int, int, int, int, HWND, HMENU, HINSTANCE, LPVOID) { return nullptr; }
+BOOL UpdateWindow(HWND) { return TRUE; }
+BOOL KillTimer(HWND, UINT_PTR) { return TRUE; }
+BOOL TerminateThread(HANDLE, DWORD) { return FALSE; }
+BOOL DrawIcon(HDC, int, int, HICON) { return FALSE; }
+HGDIOBJ GetStockObject(int) { return nullptr; }
+HBRUSH CreateSolidBrush(COLORREF) { return (HBRUSH)1; }
+HDC GetDC(HWND) { return (HDC)1; }
+int ReleaseDC(HWND, HDC) { return 0; }
+HWND GetActiveWindow() { return 0; }
+HWND GetFocus() { return 0; }
+BOOL InvalidateRect(HWND, const RECT*, BOOL) { return TRUE; }
+BOOL RedrawWindow(HWND, const RECT*, HRGN, UINT) { return TRUE; }
+UINT GetWindowLongPtrA(HWND, int) { return 0; }
+LONG_PTR SetWindowLongPtrA(HWND, int, LONG_PTR) { return 0; }
+BOOL IsWindow(HWND) { return FALSE; }
+UINT_PTR SetTimer(HWND, UINT_PTR, UINT, void*) { return 1; }
+HMENU GetMenu(HWND) { return nullptr; }
+HINSTANCE GetModuleHandleA(LPCSTR) { return 0; }
+BOOL UnregisterClassA(LPCSTR, HINSTANCE) { return TRUE; }
+BOOL CreateWindowA(LPCSTR, LPCSTR, DWORD, int, int, int, int, HWND, HMENU, HINSTANCE, LPVOID) { return FALSE; }
+BOOL AdjustWindowRectEx(LPRECT, DWORD, BOOL, DWORD) { return TRUE; }
+LONG SetWindowLongA(HWND, int, LONG) { return 0; }
+HICON LoadIconA(HINSTANCE, LPCSTR) { return (HICON)1; }
+HCURSOR LoadCursorA(HINSTANCE, LPCSTR) { return (HCURSOR)1; }
+HFONT GetStockObjectA(int) { return (HFONT)0; }
+HGDIOBJ SelectObject(HDC, HGDIOBJ) { return nullptr; }
+int GetClientRect(HWND, RECT*) { return 0; }
+LRESULT DefDlgProcA(HWND, UINT, WPARAM, LPARAM) { return 0; }
+int SendDlgItemMessageA(HWND, int, UINT, WPARAM, LPARAM) { return 0; }
+BOOL IsDialogMessageA(HWND, MSG*) { return FALSE; }
+HFONT CreateFontA(int, int, int, int, int, BOOL, BOOL, BOOL, UINT, UINT, UINT, UINT, UINT, LPCSTR) { return (HFONT)1; }
+HRGN CreateRectRgn(int, int, int, int) { return (HRGN)1; }
+int GetTextExtentPoint32A(HDC, LPCSTR, int, SIZE*) { return 0; }
+UINT GetMenuItemCount(HMENU) { return 0; }
+int GetMenuItemID(HMENU, int) { return 0; }
+HGDIOBJ CreateFontIndirectA(const void*) { return (HGDIOBJ)1; }
+BOOL GetWindowRect(HWND, RECT*) { return TRUE; }
+
+HINSTANCE LoadLibraryA(LPCSTR) { return (HINSTANCE)1; }
+BOOL FreeLibrary(HINSTANCE) { return TRUE; }
+BOOL GetCursorPos(POINT*) { return TRUE; }
+BOOL SetCursorPos(int, int) { return TRUE; }
+HINSTANCE GetModuleHandle(const char*) { return nullptr; }
+BOOL SetConsoleCtrlHandler(void*, BOOL) { return TRUE; }
+HWND GetConsoleWindow() { return nullptr; }
 #endif // PLATFORM_SDL_H

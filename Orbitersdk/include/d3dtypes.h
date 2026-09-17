@@ -49,16 +49,16 @@ public:
 class IDirect3DDevice7 {
 public:
     virtual ~IDirect3DDevice7() {}
-    virtual HRESULT STDMETHODCALLTYPE SetRenderState(DWORD State, DWORD dwValue) { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE GetRenderState(DWORD State, DWORD *pValue) { if(pValue) *pValue = 0; return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE SetTexture(DWORD Stage, void* pTexture) { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE DrawPrimitive(UINT PrimitiveType, UINT VertexFormat, const void* pVertices, UINT VertexCount, const void* pIndices) { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE DrawIndexedPrimitive(UINT PrimitiveType, UINT VertexFormat, const void* pVertices, UINT VertexCount, const void* pIndices, UINT IndexCount, UINT Flags) { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE SetFVF(DWORD VertexFormat) { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE SetStreamSource(UINT StreamNum, void* pDataStream, UINT DataStride) { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE Clear(DWORD Count, const void* pRects, DWORD Flags, DWORD Color, float Z, DWORD Stencil) { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE BeginScene() { return S_OK; }
-    virtual HRESULT STDMETHODCALLTYPE EndScene() { return S_OK; }
+    virtual HRESULT SetRenderState(DWORD State, DWORD dwValue) { return S_OK; }
+    virtual HRESULT GetRenderState(DWORD State, DWORD *pValue) { if(pValue) *pValue = 0; return S_OK; }
+    virtual HRESULT SetTexture(DWORD Stage, void* pTexture) { return S_OK; }
+    virtual HRESULT DrawPrimitive(UINT PrimitiveType, UINT VertexFormat, const void* pVertices, UINT VertexCount, const void* pIndices) { return S_OK; }
+    virtual HRESULT DrawIndexedPrimitive(UINT PrimitiveType, UINT VertexFormat, const void* pVertices, UINT VertexCount, const void* pIndices, UINT IndexCount, UINT Flags) { return S_OK; }
+    virtual HRESULT SetFVF(DWORD VertexFormat) { return S_OK; }
+    virtual HRESULT SetStreamSource(UINT StreamNum, void* pDataStream, UINT DataStride) { return S_OK; }
+    virtual HRESULT Clear(DWORD Count, const void* pRects, DWORD Flags, DWORD Color, float Z, DWORD Stencil) { return S_OK; }
+    virtual HRESULT BeginScene() { return S_OK; }
+    virtual HRESULT EndScene() { return S_OK; }
 };
 #endif
 
