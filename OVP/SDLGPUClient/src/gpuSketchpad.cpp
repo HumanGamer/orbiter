@@ -10,6 +10,9 @@
  */
 
 #include "../include/gpuTypes.h"
+typedef void* POLYGON;
+typedef int Mode;
+typedef void* Font;
 #include "../include/gpuSurface.h"
 #include "../include/gcCore.h"
 #include <SDL3/SDL_video.h>
